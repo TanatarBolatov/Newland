@@ -2,7 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
-const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
+// Эта картинка осталась только для Hero блока (если там будет видео) или как запасная
+const POSTER_IMAGE = "/background.png";
 
 // --- НАСТРОЙКИ КАСТОМНОЙ SVG ХЛОПУШКИ ---
 const USE_CUSTOM_SVG = false;
@@ -71,7 +72,7 @@ const globalStyles = `
     font-style: normal;
     font-display: swap;
   }
-  
+ 
   @font-face {
     font-family: 'AlroCustom';
     src: url('/fonts/alro-bold.otf') format('opentype');
@@ -90,15 +91,15 @@ const globalStyles = `
 
   :root {
     --electric-border-color: #35DF86;
-    --electric-light-color: rgba(53, 223, 134, 0.8); 
+    --electric-light-color: rgba(53, 223, 134, 0.8);
     --gradient-color: rgba(53, 223, 134, 0.4);
 
     --star-border-color: #5277C1;
-    --star-light-color: rgba(82, 119, 193, 0.5); 
+    --star-light-color: rgba(82, 119, 193, 0.5);
     --star-gradient-color: rgba(82, 119, 193, 0.3);
 
     --color-neutral-900: #050507;
-    
+   
     --font-head: 'Unbounded', sans-serif;
     --font-body: 'Unbounded', sans-serif;
   }
@@ -198,9 +199,9 @@ const globalStyles = `
   .pricing-btn.electric-btn:hover { background: #52CBC4; box-shadow: 0 0 25px var(--electric-light-color); }
 
   @media (max-width: 1024px) {
-    .features-grid { grid-template-columns: repeat(2, 1fr); } 
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
     .pricing-grid { grid-template-columns: repeat(2, 1fr); }
-    .pricing-card.electric { grid-column: span 2; } 
+    .pricing-card.electric { grid-column: span 2; }
     .new-comp-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
@@ -210,11 +211,11 @@ const globalStyles = `
     .hero-subtitle { font-size: clamp(1rem, 4vw, 1.5rem) !important; padding: 0 10px; }
     .clapper-btn-wrapper { transform: scale(0.9); }
     .comp-grid { grid-template-columns: 1fr; }
-    .new-comp-grid { grid-template-columns: 1fr; } 
+    .new-comp-grid { grid-template-columns: 1fr; }
     .comp-card { padding: 30px 20px; }
-    .features-grid { grid-template-columns: 1fr; } 
+    .features-grid { grid-template-columns: 1fr; }
     .partners-scene { perspective: 800px; height: 250px; }
-    .partners-rotor { width: 200px; height: 100px; } 
+    .partners-rotor { width: 200px; height: 100px; }
     .pricing-grid { grid-template-columns: 1fr; }
     .pricing-card.electric { grid-column: span 1; }
     .scramble-text { font-size: clamp(1.5rem, 8vw, 2rem); }
@@ -442,13 +443,45 @@ const HoverVideo = ({ src, poster }) => {
 };
 
 const NewComparisonSection = () => {
+  // Добавлено поле `poster` для каждого элемента. 
+  // Вставьте сюда ссылки на разные картинки для каждого видео.
   const comparisonData = [
-    { title: "Не тратят время на поиск кастингов — они приходят сами", desc: "Актёр больше не просматривает десятки чатов, каналов и сайтов. Система автоматически подбирает проекты по параметрам профиля: типаж, навыки, возраст, локация, занятость. В результате актёр тратит время не на поиски, а на отклики и подготовку.", video: "/videos/video_test.webm" },
-    { title: "Быстрее откликаются других", desc: "Приложение показывает кастинг сразу после его публикации студией. Нет задержек, пересылок и «поздно увидел». Ранний отклик повышает шанс пройти хотя бы первый этап отбора.", video: "/videos/video_test.webm" },
-    { title: "Зарабатывают больше денег", desc: "Чем больше релевантных кастингов — тем выше шанс попасть на оплачиваемые проекты. Сокращение «простоя» между съёмками напрямую увеличивает месячный доход. Также исчезают пропущенные возможности из-за того, что кастинг затерялся в чатах.", video: "/videos/video_test.webm" },
-    { title: "Не пропускают ни один кастинг", desc: "Каждое новое предложение отображается в одном месте. Система уведомляет только о кастингах, подходящих конкретному актёру. Ничего не теряется среди спама и сообщений не по теме.", video: "/videos/video_test.webm" },
-    { title: "Получают больше ролей", desc: "Алгоритм постоянно сопоставляет актёров и проекты. Актёр может быстро пройти несколько кастингов подряд — свайп и отклик занимают секунды. Повышается общий объём участий и, соответственно, количество подтверждённых ролей.", video: "/videos/video_test.webm" },
-    { title: "Не сидят в 20-ти разных WA/TG чатах — только в одном месте", desc: "Вместо десятков групп, дублей и хаоса — единая рабочая среда внутри приложения. Актёр не переключается между мессенджерами, не пролистывает сотни сообщений и не теряет важное. Всё структурировано: каждое предложение — карточка, каждый отклик — действие.", video: "/videos/video_test.webm" }
+    {
+      title: "Не тратят время на поиск кастингов — они приходят сами",
+      desc: "Актёр больше не просматривает десятки чатов, каналов и сайтов. Система автоматически подбирает проекты по параметрам профиля: типаж, навыки, возраст, локация, занятость. В результате актёр тратит время не на поиски, а на отклики и подготовку.",
+      video: "/videos/video_test.webm",
+      poster: "/logo/casterlogo.jpg" // ССЫЛКА 1
+    },
+    {
+      title: "Быстрее откликаются других",
+      desc: "Приложение показывает кастинг сразу после его публикации студией. Нет задержек, пересылок и «поздно увидел». Ранний отклик повышает шанс пройти хотя бы первый этап отбора.",
+      video: "/videos/video_test.webm",
+      poster: "/logo/casterlogo.jpg" // ССЫЛКА 2
+    },
+    {
+      title: "Зарабатывают больше денег",
+      desc: "Чем больше релевантных кастингов — тем выше шанс попасть на оплачиваемые проекты. Сокращение «простоя» между съёмками напрямую увеличивает месячный доход. Также исчезают пропущенные возможности из-за того, что кастинг затерялся в чатах.",
+      video: "/videos/video_test.webm",
+      poster: "/logo/casterlogo.jpg" // ССЫЛКА 3
+    },
+    {
+      title: "Не пропускают ни один кастинг",
+      desc: "Каждое новое предложение отображается в одном месте. Система уведомляет только о кастингах, подходящих конкретному актёру. Ничего не теряется среди спама и сообщений не по теме.",
+      video: "/videos/video_test.webm",
+      poster: "/logo/casterlogo.jpg" // ССЫЛКА 4
+    },
+    {
+      title: "Получают больше ролей",
+      desc: "Алгоритм постоянно сопоставляет актёров и проекты. Актёр может быстро пройти несколько кастингов подряд — свайп и отклик занимают секунды. Повышается общий объём участий и, соответственно, количество подтверждённых ролей.",
+      video: "/videos/video_test.webm",
+      poster: "/logo/casterlogo.jpg" // ССЫЛКА 5
+    },
+    {
+      title: "Не сидят в 20-ти разных WA/TG чатах — только в одном месте",
+      desc: "Вместо десятков групп, дублей и хаоса — единая рабочая среда внутри приложения. Актёр не переключается между мессенджерами, не пролистывает сотни сообщений и не теряет важное. Всё структурировано: каждое предложение — карточка, каждый отклик — действие.",
+      video: "/videos/video_test.webm",
+      poster: "/logo/casterlogo.jpg" // ССЫЛКА 6
+    }
   ];
 
   return (
@@ -458,7 +491,8 @@ const NewComparisonSection = () => {
       <div className="new-comp-grid">
         {comparisonData.map((item, index) => (
           <div key={index} className="new-comp-card">
-            <HoverVideo src={item.video} poster={POSTER_IMAGE} />
+            {/* Теперь мы берем poster из конкретного объекта данных */}
+            <HoverVideo src={item.video} poster={item.poster} />
             <div className="comp-text-block">
               <h3 className="comp-card-title">{item.title}</h3>
               <p className="comp-card-desc">{item.desc}</p>
