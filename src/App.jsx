@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
 // Эта картинка осталась только для Hero блока (если там будет видео) или как запасная
-const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
+const POSTER_IMAGE = "/background.png";
 
 // Размер ячейки сетки (в пикселях)
 const GRID_SIZE = 60;
