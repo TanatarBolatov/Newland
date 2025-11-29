@@ -1,42 +1,15 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
 // Эта картинка осталась только для Hero блока (если там будет видео) или как запасная
-const POSTER_IMAGE = "/background.png";
-
-// --- НАСТРОЙКИ КАСТОМНОЙ SVG ХЛОПУШКИ ---
-const USE_CUSTOM_SVG = false;
-
-const CUSTOM_VIEWBOX = "0 0 512 512";
-const CUSTOM_TRANSFORM_ORIGIN = "20px 100px";
-
-const CustomClapperTop = ({ color }) => (
-  <>
-    <rect x="20" y="20" width="400" height="80" rx="10" fill={color} stroke="black" strokeWidth="5" />
-  </>
-);
-
-const CustomClapperBottom = ({ color }) => (
-  <>
-    <rect x="20" y="100" width="400" height="300" rx="20" fill="rgba(30,30,30,0.9)" stroke={color} strokeWidth="5" />
-  </>
-);
+const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
 
 // Размер ячейки сетки (в пикселях)
 const GRID_SIZE = 60;
 
 // --- ИКОНКИ ---
-const CheckIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#35DF86" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
-const CrossIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 const SmallCheck = ({ color = "#35DF86" }) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
-
-const IconTarget = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>;
-const IconImage = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>;
-const IconStars = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z" /><path d="M5 3v4" /><path d="M9 3v4" /><path d="M3 5h4" /><path d="M3 9h4" /></svg>;
-const IconUser = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>;
-const IconShield = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /></svg>;
-const IconBolt = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" /></svg>;
 
 const IconGift = ({ className, color }) => (
   <svg className={className} style={{ color: color }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -62,9 +35,16 @@ const IconCrown = ({ className, color }) => (
 
 // --- СТИЛИ ---
 const globalStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700;900&display=swap');
+  /* --- ПОДКЛЮЧЕНИЕ ШРИФТА MONT (для всего сайта) --- */
+  @font-face {
+    font-family: 'MontCustom';
+    src: url('/fonts/mont_heavy.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
 
-  /* --- ПОДКЛЮЧЕНИЕ ШРИФТА ALRO (ЛОКАЛЬНО) --- */
+  /* --- ПОДКЛЮЧЕНИЕ ШРИФТА ALRO (только для "caster") --- */
   @font-face {
     font-family: 'AlroCustom';
     src: url('/fonts/alro-regular.otf') format('opentype');
@@ -72,10 +52,11 @@ const globalStyles = `
     font-style: normal;
     font-display: swap;
   }
- 
+  
+  /* Fallback на regular */
   @font-face {
     font-family: 'AlroCustom';
-    src: url('/fonts/alro-bold.otf') format('opentype');
+    src: url('/fonts/alro-regular.otf') format('opentype');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -99,9 +80,10 @@ const globalStyles = `
     --star-gradient-color: rgba(82, 119, 193, 0.3);
 
     --color-neutral-900: #050507;
-   
-    --font-head: 'Unbounded', sans-serif;
-    --font-body: 'Unbounded', sans-serif;
+    
+    /* ЗАМЕНИЛ ГЛОБАЛЬНЫЙ ШРИФТ НА MONT */
+    --font-head: 'MontCustom', sans-serif;
+    --font-body: 'MontCustom', sans-serif;
   }
 
   body {
@@ -117,12 +99,95 @@ const globalStyles = `
 
   .hero-container { padding: 20px; gap: 30px; background: #000; }
   .content-wrapper { gap: 80px; width: 100%; max-width: 800px; }
-  .clapper-btn-svg { width: 200px; height: 150px; overflow: visible; }
-  .clapper-top-group { transform-origin: 5px 30px; transform: rotate(0deg); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; }
-  @media (hover: hover) { .clapper-btn-wrapper:hover .clapper-top-group { transform: rotate(-15deg); } }
-  .clapper-btn-wrapper.is-clapping .clapper-top-group { animation: clap-effect 0.2s forwards; transition: none; }
-  @keyframes clap-effect { 0% { transform: rotate(-20deg); } 40% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }
 
+  /* --- СТИЛИ ДЛЯ СТЕКЛЯННОЙ ХЛОПУШКИ --- */
+  .clapper-btn-wrapper {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 10px;
+    transition: transform 0.2s ease;
+  }
+  .clapper-btn-wrapper:active {
+    transform: scale(0.95);
+  }
+
+  .clapper-container {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .glass-clapper-style {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 0 8px 4px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Блики на гранях */
+  .glass-clapper-style::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    pointer-events: none;
+  }
+  .glass-clapper-style::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 1px; height: 100%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3));
+    pointer-events: none;
+  }
+
+  .clapper-top {
+    height: 50px;
+    width: 100%;
+    border-radius: 16px;
+    transform-origin: 10px 40px; /* Точка вращения (петля) */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Полоски добавляются инлайново */
+  }
+
+  .clapper-bottom {
+    height: 100px;
+    width: 100%;
+    border-radius: 20px; /* Более закругленные углы как просили */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Анимация при наведении */
+  @media (hover: hover) {
+    .clapper-btn-wrapper:hover .clapper-top {
+      transform: rotate(-15deg);
+    }
+  }
+
+  /* Анимация клика (хлопок) */
+  .clapper-btn-wrapper.is-clapping .clapper-top {
+    animation: clap-html-effect 0.25s forwards;
+  }
+
+  @keyframes clap-html-effect {
+    0% { transform: rotate(-20deg); }
+    40% { transform: rotate(0deg); }
+    60% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  /* --- GRID BACKGROUND --- */
   .grid-wrapper { position: relative; width: 100%; background-color: #020202; overflow: hidden; }
   .grid-lines { position: absolute; inset: 0; z-index: 1; background-size: ${GRID_SIZE}px ${GRID_SIZE}px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px); pointer-events: none; }
   .grid-cells-container { position: absolute; top: 0; left: 0; z-index: 0; pointer-events: none; }
@@ -133,36 +198,266 @@ const globalStyles = `
   .section-title { font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; text-transform: uppercase; text-align: center; margin-bottom: 15px; line-height: 1.2; }
   .section-subtitle { font-size: clamp(1rem, 2vw, 1.2rem); color: #9ca3af; text-align: center; margin-bottom: 60px; max-width: 600px; line-height: 1.5; font-weight: 300; }
 
-  .new-comp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; width: 100%; }
-  .new-comp-card { border-radius: 24px; overflow: hidden; background-color: #050507; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5); transition: transform 0.3s ease, border-color 0.3s ease; display: flex; flex-direction: column; }
-  .new-comp-card:hover { transform: translateY(-5px); border-color: rgba(53, 223, 134, 0.3); }
-  .comp-video-container { width: 100%; height: 180px; background-color: #1a1a1a; overflow: hidden; position: relative; }
-  .comp-video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .comp-text-block { padding: 25px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-  .comp-card-title { font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; color: white; margin: 0; line-height: 1.4; }
-  .comp-card-desc { font-size: 0.9rem; line-height: 1.6; color: #9ca3af; margin: 0; font-weight: 300; }
+  /* ИЗМЕНЕНИЯ В СЕТКЕ */
+  .new-comp-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 30px; 
+    max-width: 1600px; 
+    width: 100%; 
+  }
 
-  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; width: 100%; }
-  .feat-card { background-color: #0a0a0a; border: 1px solid rgba(53, 223, 134, 0.15); border-radius: 20px; padding: 30px; display: flex; flex-direction: column; align-items: flex-start; gap: 15px; transition: all 0.3s ease; position: relative; overflow: hidden; background: radial-gradient(circle at top left, rgba(53, 223, 134, 0.12) 0%, rgba(0, 0, 0, 0) 60%), #0a0a0a; z-index: 1; }
-  .feat-card:hover { transform: translateY(-5px); border-color: rgba(53, 223, 134, 0.4); box-shadow: 0 10px 30px -10px rgba(53, 223, 134, 0.2); }
-  .feat-icon-wrapper { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background-color: rgba(53, 223, 134, 0.1); color: #35DF86; margin-bottom: 10px; }
-  .feat-title { font-size: 1.25rem; font-weight: 600; color: white; margin: 0; font-family: var(--font-head); }
-  .feat-desc { font-size: 0.95rem; line-height: 1.5; color: #9ca3af; margin: 0; }
+  /* ЗАГОЛОВОЧНЫЙ БЛОК С ЭФФЕКТОМ СТЕКЛА (GLASSMORPHISM) */
+  .bento-header-card {
+    grid-column: span 2;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(11px);
+    -webkit-backdrop-filter: blur(11px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
+    border-radius: 32px;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 250px;
+    position: relative;
+    overflow: hidden;
+  }
 
+  .bento-header-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none;
+  }
+  .bento-header-card::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none;
+  }
+
+  /* НОВЫЙ СТИЛЬ ДЛЯ FEATURES HEADER (аналогичен bento-header-card, но без grid-column) */
+  .features-header-card {
+    width: 100%;
+    max-width: 1600px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(11px);
+    -webkit-backdrop-filter: blur(11px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
+    border-radius: 32px;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 250px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 40px; /* Отступ снизу */
+  }
+
+  .features-header-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none;
+  }
+  .features-header-card::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none;
+  }
+
+  .new-comp-card { 
+    border-radius: 32px; overflow: hidden; background-color: #0a0a0a; border: none; 
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); 
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+    display: flex; flex-direction: column; height: 600px; position: relative; cursor: pointer;
+  }
+  .new-comp-card:hover { transform: scale(1.02); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); }
+  
+  .comp-video-container { width: 100%; height: 100%; background-color: #1a1a1a; overflow: hidden; position: absolute; top: 0; left: 0; z-index: 0; }
+  .comp-video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .new-comp-card:hover .comp-video { transform: scale(1.05); }
+  
+  .comp-text-block { padding: 40px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; position: relative; z-index: 2; justify-content: flex-end; pointer-events: none; }
+  .comp-card-title { 
+    padding: 20px 30px; font-family: var(--font-head); font-size: clamp(1.8rem, 2.5vw, 2.5rem); font-weight: 700; color: white; line-height: 1.1; 
+    background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; width: fit-content; 
+    margin: 30px 0 0 30px; position: relative; z-index: 2; pointer-events: none;
+  }
+  .comp-card-desc { display: none; }
+
+  /* --- APPLE TV CAROUSEL STYLES --- */
+  .apple-slider-container {
+    width: 100%;
+    max-width: 1600px;
+    height: 600px; /* Фиксированная высота для контейнера */
+    position: relative;
+    overflow: hidden; /* Скрываем выходящие элементы */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto; /* Центрирование */
+    padding: 20px 0;
+  }
+
+  .apple-slider-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px; /* Перспектива для 3D эффекта, если нужно, но здесь мы используем scale/translate */
+  }
+
+  .apple-slide-item {
+    position: absolute;
+    width: 65%; /* Ширина центрального слайда */
+    height: 90%;
+    border-radius: 20px;
+    overflow: hidden;
+    background-color: #111;
+    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); /* Apple-like ease */
+    cursor: pointer;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  }
+
+  .apple-slide-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  .apple-slide-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 40%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 40px;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.2s;
+  }
+
+  /* Активный слайд показывает контент */
+  .apple-slide-item.active .apple-slide-content {
+    opacity: 1;
+  }
+
+  .apple-slide-title {
+    font-family: var(--font-head);
+    font-size: clamp(1.8rem, 3vw, 3rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    margin-bottom: 10px;
+  }
+
+  .apple-slide-desc {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    color: #ccc;
+    line-height: 1.5;
+    max-width: 80%;
+  }
+
+  .nav-dots-wrapper {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 20;
+  }
+  
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active {
+    background: #35DF86;
+    transform: scale(1.2);
+  }
+
+  /* ...остальные стили... */
   .scramble-text { font-family: var(--font-head); font-weight: 700; text-transform: uppercase; color: white; cursor: default; font-size: clamp(2.5rem, 6vw, 4rem); letter-spacing: 1px; }
   .dud { color: #555; opacity: 0.7; }
 
   .partners-section-wrapper { width: 100%; display: flex; justify-content: center; padding: 100px 20px; position: relative; z-index: 2; }
-  .partners-container-box { width: 100%; max-width: 1200px; background-color: #050507; border: none; border-radius: 32px; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; overflow: hidden; }
+  .partners-container-box { width: 100%; max-width: 1600px; background-color: #050507; border: none; border-radius: 32px; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; overflow: hidden; }
   .partners-scene { perspective: 1200px; height: 400px; display: flex; justify-content: center; align-items: center; width: 100%; overflow: visible; position: relative; }
-  .partners-rotor { width: 300px; height: 140px; position: relative; transform-style: preserve-3d; animation: rotor-spin 30s linear infinite; }
-  .partner-card-3d { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; border: none; border-radius: 12px; box-shadow: none; backdrop-filter: none; display: flex; justify-content: center; align-items: center; overflow: visible; padding: 10px; cursor: pointer; transition: transform 0.3s ease; text-decoration: none; }
-  .partner-card-3d img { width: 100%; height: 100%; object-fit: contain; opacity: 1; transition: all 0.3s ease; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
-  .partner-card-3d:hover { transform: scale(1.1); }
+  
+  .partners-rotor { width: 400px; height: 200px; position: relative; transform-style: preserve-3d; animation: rotor-spin 30s linear infinite; }
+  
+  /* ОБНОВЛЕНО: ЧИСТЫЙ СТИЛЬ БЕЗ СТЕКЛА, ПРОСТО ПАРЯЩИЕ ЛОГОТИПЫ */
+  .partner-card-3d { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: transparent; /* Без фона */
+    border: none; 
+    border-radius: 12px; 
+    box-shadow: none; 
+    backdrop-filter: none; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    overflow: visible; 
+    padding: 10px; 
+    cursor: pointer; 
+    transition: transform 0.3s ease; 
+    text-decoration: none; 
+  }
+  
+  .partner-card-3d img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; 
+    opacity: 0.8; 
+    transition: all 0.3s ease; 
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); 
+  }
+  
+  /* Эффект при наведении - просто увеличение */
+  .partner-card-3d:hover { 
+    transform: scale(1.1); 
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  
+  .partner-card-3d:hover img {
+    opacity: 1;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(53, 223, 134, 0.4));
+  }
+
   @keyframes rotor-spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
   .partners-fade-overlay { position: absolute; top: 0; bottom: 0; left: 0; right: 0; pointer-events: none; background: linear-gradient(to right, #050507 0%, transparent 15%, transparent 85%, #050507 100%); z-index: 5; }
 
-  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; width: 100%; margin-top: 20px; align-items: stretch; }
+  /* ИЗМЕНЕНО: ширина 1600px для выравнивания с другими блоками */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1600px; width: 100%; margin-top: 20px; align-items: stretch; }
   .pricing-card { background-color: #050507; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; position: relative; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5); transition: transform 0.3s ease, border-color 0.3s ease; padding: 40px 30px; height: 100%; }
   .pricing-card:hover { transform: translateY(-8px); border-color: rgba(255, 255, 255, 0.2); }
   .pricing-card.free { background: radial-gradient(circle at top center, rgba(92, 159, 197, 0.15) 0%, rgba(5, 5, 7, 0) 60%), #050507; }
@@ -178,7 +473,8 @@ const globalStyles = `
   .badge-electric { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--electric-border-color); color: black; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; z-index: 10; box-shadow: 0 0 15px var(--electric-light-color); }
   .pricing-header { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; margin-bottom: 30px; }
   .plan-icon { width: 48px; height: 48px; }
-  .plan-name { font-family: var(--font-head); font-size: 2.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: white; }
+  
+  .plan-name { font-family: var(--font-head); font-size: clamp(1.5rem, 2.2vw, 2.5rem); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: white; line-height: 1.1; word-break: break-word; }
   .pricing-card.free .plan-name { color: #5C9FC5; }
   .standard-electric-content .plan-name { color: #5277C1; text-shadow: 0 0 8px rgba(82, 119, 193, 0.4); }
   .electric-content .plan-name { color: #35DF86; text-shadow: 0 0 10px rgba(53, 223, 134, 0.5); }
@@ -203,6 +499,9 @@ const globalStyles = `
     .pricing-grid { grid-template-columns: repeat(2, 1fr); }
     .pricing-card.electric { grid-column: span 2; }
     .new-comp-grid { grid-template-columns: repeat(2, 1fr); }
+    .bento-header-card { grid-column: span 2; }
+    .apple-carousel-wrapper { height: 500px; }
+    .carousel-card-item { width: 75%; }
   }
 
   @media (max-width: 768px) {
@@ -212,13 +511,16 @@ const globalStyles = `
     .clapper-btn-wrapper { transform: scale(0.9); }
     .comp-grid { grid-template-columns: 1fr; }
     .new-comp-grid { grid-template-columns: 1fr; }
-    .comp-card { padding: 30px 20px; }
+    .bento-header-card { grid-column: span 1; }
+    .new-comp-card { height: 500px; } 
     .features-grid { grid-template-columns: 1fr; }
     .partners-scene { perspective: 800px; height: 250px; }
     .partners-rotor { width: 200px; height: 100px; }
     .pricing-grid { grid-template-columns: 1fr; }
     .pricing-card.electric { grid-column: span 1; }
     .scramble-text { font-size: clamp(1.5rem, 8vw, 2rem); }
+    .apple-carousel-wrapper { height: 400px; }
+    .carousel-card-item { width: 85%; }
   }
 
   @media (max-width: 380px) {
@@ -228,6 +530,7 @@ const globalStyles = `
 
 // --- COMPONENTS ---
 
+// Полностью переписанный компонент на HTML вместо SVG для поддержки glassmorphism
 const ClapperButton = ({ text, onClick, icon: Icon, color = "white" }) => {
   const [isClapping, setIsClapping] = useState(false);
   const handleClick = () => {
@@ -241,103 +544,112 @@ const ClapperButton = ({ text, onClick, icon: Icon, color = "white" }) => {
     <button
       onClick={handleClick}
       className={`clapper-btn-wrapper ${isClapping ? "is-clapping" : ""}`}
-      style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0, outline: "none", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}
       aria-label={text}
     >
-      <svg className="clapper-btn-svg" viewBox={USE_CUSTOM_SVG ? CUSTOM_VIEWBOX : "0 -30 200 150"} fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g className="clapper-top-group" style={USE_CUSTOM_SVG ? { transformOrigin: CUSTOM_TRANSFORM_ORIGIN } : {}}>
-          {USE_CUSTOM_SVG ? (
-            <CustomClapperTop color={color} />
-          ) : (
-            <>
-              <rect x="0" y="0" width="200" height="30" rx="4" fill={color} />
-              <path d="M20 0L0 30H30L50 0H20Z" fill="#1a1a1a" />
-              <path d="M70 0L40 30H70L100 0H70Z" fill="#1a1a1a" />
-              <path d="M120 0L90 30H120L150 0H120Z" fill="#1a1a1a" />
-              <path d="M170 0L140 30H170L200 0H170Z" fill="#1a1a1a" />
-            </>
-          )}
-        </g>
+      <div className="clapper-container">
+        <div
+          className="clapper-top glass-clapper-style"
+          style={{
+            // Градиентные полоски поверх стеклянного фона
+            backgroundImage: `repeating-linear-gradient(
+              45deg,
+              ${color} 0,
+              ${color} 12px,
+              transparent 12px,
+              transparent 24px
+            )`
+          }}
+        />
 
-        <g transform={USE_CUSTOM_SVG ? "" : "translate(0, 34)"}>
-          {USE_CUSTOM_SVG ? (
-            <CustomClapperBottom color={color} />
-          ) : (
-            <>
-              <rect width="200" height="80" rx="6" fill="rgba(0,0,0,0.6)" stroke={color} strokeWidth="2" />
-              <rect width="200" height="10" rx="2" fill={color} />
-              <path d="M20 0L0 10H30L50 0H20Z" fill="#1a1a1a" />
-              <path d="M70 0L40 10H70L100 0H70Z" fill="#1a1a1a" />
-              <path d="M120 0L90 10H120L150 0H120Z" fill="#1a1a1a" />
-              <path d="M170 0L140 10H170L200 0H170Z" fill="#1a1a1a" />
-            </>
-          )}
-
-          <foreignObject x={USE_CUSTOM_SVG ? "0" : "0"} y={USE_CUSTOM_SVG ? "30%" : "20"} width={USE_CUSTOM_SVG ? "100%" : "200"} height="60">
-            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", color: color, fontFamily: "var(--font-head)", fontSize: "24px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "1.5px", textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
-              {Icon && <Icon size={24} />} {text}
-            </div>
-          </foreignObject>
-        </g>
-      </svg>
+        <div className="clapper-bottom glass-clapper-style">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            color: color,
+            fontFamily: "var(--font-head)",
+            fontSize: "24px",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            letterSpacing: "1.5px",
+            textShadow: "0 2px 4px rgba(0,0,0,0.8)"
+          }}>
+            {Icon && <Icon size={24} />} {text}
+          </div>
+        </div>
+      </div>
     </button>
   );
 };
 
+// ОБНОВЛЕННАЯ HERO SECTION С ГЛЯНЦЕВЫМ СТЕКЛЯННЫМ ТЕКСТОМ
 const HeroSection = () => {
-  const h1WrapperRef = useRef(null);
-  const h2WrapperRef = useRef(null);
-  const targetGlobalPos = useRef({ x: -500, y: -500 });
-  const currentGlobalPos = useRef({ x: -500, y: -500 });
-  const isAnimating = useRef(true);
+  const handleMouseMove = (e) => {
+    // Оставлена логика для параллакса, если понадобится, 
+    // но сейчас фокус на статичном стеклянном тексте
+  };
 
-  useEffect(() => {
-    let frameId;
-    isAnimating.current = true;
-    const animate = () => {
-      if (!isAnimating.current) return;
-      const ease = 0.12;
-      const dx = targetGlobalPos.current.x - currentGlobalPos.current.x;
-      const dy = targetGlobalPos.current.y - currentGlobalPos.current.y;
-      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-        currentGlobalPos.current.x += dx * ease;
-        currentGlobalPos.current.y += dy * ease;
-        const globalX = currentGlobalPos.current.x;
-        const globalY = currentGlobalPos.current.y;
-        const updateCssVariables = (ref) => {
-          if (ref.current) {
-            const rect = ref.current.getBoundingClientRect();
-            ref.current.style.setProperty("--x", `${globalX - rect.left}px`);
-            ref.current.style.setProperty("--y", `${globalY - rect.top}px`);
-          }
-        };
-        updateCssVariables(h1WrapperRef);
-        updateCssVariables(h2WrapperRef);
-      }
-      frameId = requestAnimationFrame(animate);
-    };
-    frameId = requestAnimationFrame(animate);
-    return () => { isAnimating.current = false; cancelAnimationFrame(frameId); };
-  }, []);
+  // Стиль глянцевого стекла для текста
+  const glossyTextStyle = {
+    fontFamily: "'AlroCustom', sans-serif",
+    fontWeight: "400",
+    textTransform: "none",
+    lineHeight: "1",
 
-  const handleMouseMove = (e) => { targetGlobalPos.current.x = e.clientX; targetGlobalPos.current.y = e.clientY; };
-  const handleMouseLeave = () => { targetGlobalPos.current.x = -500; targetGlobalPos.current.y = -500; };
+    // 1. Прозрачная заливка базы
+    color: "transparent",
+
+    // 2. Глянцевый градиент (Сверху ярко-белый, снизу полупрозрачный)
+    background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 100%)",
+
+    // 3. Обрезка фона по тексту
+    WebkitBackgroundClip: "text",
+    backgroundClip: "text",
+
+    // 4. Тонкая белая обводка (контур стекла)
+    WebkitTextStroke: "1px rgba(255, 255, 255, 0.6)",
+
+    // 5. Глубокое свечение (имитация объема и преломления света)
+    filter: "drop-shadow(0 0 15px rgba(53, 223, 134, 0.2)) drop-shadow(0 0 5px rgba(255,255,255,0.3))",
+
+    cursor: "default"
+  };
+
+  const glossySubtitleStyle = {
+    ...glossyTextStyle,
+    background: "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 100%)",
+    WebkitTextStroke: "0.5px rgba(255, 255, 255, 0.4)",
+    filter: "drop-shadow(0 0 8px rgba(82, 119, 193, 0.2))",
+    letterSpacing: "1px"
+  };
 
   return (
-    <div onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} className="hero-container" style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <video src={VIDEO_PATH} poster={POSTER_IMAGE} autoPlay muted loop playsInline style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, willChange: "transform" }} />
+    <div onMouseMove={handleMouseMove} className="hero-container" style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <video src={VIDEO_PATH} poster={POSTER_IMAGE} autoPlay muted loop playsInline style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
       <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))", zIndex: 1 }} />
 
-      <div className="hero-content" style={{ position: "relative", zIndex: 2, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "30px", color: "white", textAlign: "center" }}>
-        <div ref={h1WrapperRef} style={{ position: "relative", display: "inline-block", "--x": "-500px", "--y": "-500px", willChange: "--x, --y" }}>
-          <h1 className="hero-title" style={{ fontSize: "clamp(6rem, 20vw, 18rem)", fontFamily: "'AlroCustom', sans-serif", fontWeight: "400", letterSpacing: "-0.02em", margin: 0, textTransform: "uppercase", textShadow: "0 4px 20px rgba(0,0,0,0.6)", lineHeight: "1", color: "white", position: "relative", zIndex: 1 }}>CASTER</h1>
-          <h1 className="hero-title" style={{ fontSize: "clamp(6rem, 20vw, 18rem)", fontFamily: "'AlroCustom', sans-serif", fontWeight: "400", letterSpacing: "-0.02em", margin: 0, textTransform: "uppercase", lineHeight: "1", position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 2, background: "linear-gradient(to right, #35DF86, #5277C1)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", WebkitMaskImage: "radial-gradient(circle 180px at var(--x) var(--y), black 40%, transparent 70%)", maskImage: "radial-gradient(circle 180px at var(--x) var(--y), black 40%, transparent 70%)", willChange: "mask-image, -webkit-mask-image" }}>CASTER</h1>
-        </div>
+      <div className="hero-content" style={{ position: "relative", zIndex: 2, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0px", textAlign: "center" }}>
+
+        {/* CASTER - ГЛЯНЦЕВЫЙ СТЕКЛЯННЫЙ СТИЛЬ */}
+        <h1 className="hero-title" style={{
+          fontSize: "clamp(6rem, 20vw, 18rem)",
+          ...glossyTextStyle
+        }}>
+          caster
+        </h1>
+
         <div className="content-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div ref={h2WrapperRef} style={{ position: "relative", display: "inline-block", "--x": "-500px", "--y": "-500px", maxWidth: "90vw", willChange: "--x, --y" }}>
-            <h2 className="hero-subtitle" style={{ fontSize: "clamp(1.2rem, 3vw, 2rem)", fontWeight: "400", color: "white", margin: 0, cursor: "default", position: "relative", zIndex: 1, letterSpacing: "1px" }}>All castings in one place with AI</h2>
-            <h2 className="hero-subtitle" style={{ fontSize: "clamp(1.2rem, 3vw, 2rem)", fontWeight: "400", margin: 0, position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 2, letterSpacing: "1px", background: "linear-gradient(to right, #35DF86, #5277C1)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", WebkitMaskImage: "radial-gradient(circle 120px at var(--x) var(--y), black 50%, transparent 10%)", maskImage: "radial-gradient(circle 120px at var(--x) var(--y), black 40%, transparent 70%)", willChange: "mask-image" }}>All castings in one place with AI</h2>
-          </div>
+
+          {/* SUBTITLE - ТОЖЕ ГЛЯНЕЦ, НО МЯГЧЕ */}
+          <h2 className="hero-subtitle" style={{
+            fontSize: "clamp(1.2rem, 3vw, 2rem)",
+            margin: 0,
+            marginTop: "-20px", // Подняли текст
+            ...glossySubtitleStyle
+          }}>
+            All castings in one place with AI
+          </h2>
+
           <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", paddingTop: "0px", width: "100%" }}>
             <ClapperButton text="Business" color="#5277C1" onClick={() => console.log("Business Clicked")} />
             <ClapperButton text="Actors" color="#35DF86" onClick={() => console.log("Actors Clicked")} />
@@ -416,28 +728,32 @@ const GridBackgroundWrapper = ({ children }) => {
   );
 };
 
-const HoverVideo = ({ src, poster }) => {
-  const videoRef = useRef(null);
-
-  const handleMouseEnter = () => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(error => console.log('Autoplay prevented', error));
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.load();
-    }
-  };
-
+// НОВЫЙ КОМПОНЕНТ КАРТОЧКИ (инкапсулирует логику воспроизведения и верстку)
+const ComparisonCard = ({ item }) => {
+  // Вернул autoPlay для видео
   return (
-    <div className="comp-video-container" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <video ref={videoRef} className="comp-video" muted loop playsInline poster={poster}>
-        <source src={src} type="video/webm" />
-        Your browser does not support the video tag.
-      </video>
+    <div className="new-comp-card">
+      {/* Background Video */}
+      <div className="comp-video-container">
+        <video
+          className="comp-video"
+          autoPlay // Вернул автовоспроизведение
+          muted
+          loop
+          playsInline
+          poster={item.poster}
+        >
+          <source src={item.video} type="video/webm" />
+        </video>
+      </div>
+
+      {/* Title */}
+      <h3 className="comp-card-title">{item.title}</h3>
+
+      {/* Description Text */}
+      <div className="comp-text-block">
+        {/* REMOVED DESCRIPTION */}
+      </div>
     </div>
   );
 };
@@ -486,47 +802,261 @@ const NewComparisonSection = () => {
 
   return (
     <section className="section-container comparison-section">
-      <h2 className="section-title">Почему выбирают <span style={{ color: "#5277C1" }}>Caster AI</span></h2>
-      <p className="section-subtitle">Разница, которую вы почувствуете с первого дня</p>
       <div className="new-comp-grid">
+        {/* ХЕДЕР СЕТКИ - занимает всю ширину */}
+        <div className="bento-header-card">
+          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1 }}>
+            <span style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)", display: "block", marginBottom: "10px" }}>
+              ПОЧЕМУ ВЫБИРАЮТ
+            </span>
+            <span style={{
+              fontSize: "clamp(3rem, 6vw, 6rem)", // Increased size
+              fontFamily: "'AlroCustom', sans-serif",
+              textTransform: "none",
+              fontWeight: "400",
+              background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", // Gradient based on screenshot approximation
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              display: "block"
+            }}>
+              caster ai
+            </span>
+          </h2>
+        </div>
+
         {comparisonData.map((item, index) => (
-          <div key={index} className="new-comp-card">
-            {/* Теперь мы берем poster из конкретного объекта данных */}
-            <HoverVideo src={item.video} poster={item.poster} />
-            <div className="comp-text-block">
-              <h3 className="comp-card-title">{item.title}</h3>
-              <p className="comp-card-desc">{item.desc}</p>
-            </div>
-          </div>
+          <ComparisonCard key={index} item={item} />
         ))}
       </div>
     </section>
   );
 };
 
+// --- REAL APPLE TV CAROUSEL LOGIC ---
+const AppleCarousel = ({ items }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const timerRef = useRef(null);
+  const videoRefs = useRef([]);
+
+  // Auto-rotate logic with reset capabilities
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % items.length);
+    }, 5000);
+  }, [items.length]);
+
+  useEffect(() => {
+    startTimer();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [startTimer]);
+
+  const handleManualChange = (index) => {
+    setActiveIndex(index);
+    startTimer(); // Reset timer on manual interaction
+  };
+
+  // Video playback control effect
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+
+      if (index === activeIndex) {
+        // Play active video
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Auto-play was prevented:", error);
+          });
+        }
+      } else {
+        // Pause others
+        video.pause();
+        // Optional: reset time to 0 if you want them to start from beginning
+        // video.currentTime = 0; 
+      }
+    });
+  }, [activeIndex]);
+
+  return (
+    <div className="apple-slider-container">
+      <div className="apple-slider-track">
+        {items.map((item, index) => {
+          // Circular logic distance calculation
+          const length = items.length;
+          // Calculate offset in a circular way
+          // We want to know if index is "right after" activeIndex (1) or "right before" (-1)
+          // (index - activeIndex + length) % length gives us distance in positive numbers
+          // e.g. length 6. Active 5. Index 0. (0 - 5 + 6) % 6 = 1. So 0 is +1 from 5.
+
+          let circularDistance = (index - activeIndex + length) % length;
+
+          // Normalize so that half the array is "after" (positive) and half "before" (negative)
+          if (circularDistance > length / 2) {
+            circularDistance -= length;
+          }
+
+          // circularDistance is now like: 0 (active), 1 (next), -1 (prev), 2, -2 etc.
+
+          let style = {
+            transform: `translateX(${circularDistance * 55}%) scale(0.7)`, // Default "far away" style
+            zIndex: 1,
+            opacity: 0.2,
+            pointerEvents: 'none',
+            filter: 'brightness(0.3)',
+            transition: 'all 0.6s cubic-bezier(0.19, 1, 0.22, 1)'
+          };
+
+          if (circularDistance === 0) {
+            // Active
+            style = {
+              transform: 'translateX(0) scale(1)',
+              zIndex: 10,
+              opacity: 1,
+              pointerEvents: 'auto',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
+              filter: 'brightness(1)',
+              transition: 'all 0.6s cubic-bezier(0.19, 1, 0.22, 1)'
+            };
+          } else if (circularDistance === 1) {
+            // Next
+            style = {
+              transform: 'translateX(65%) scale(0.85)',
+              zIndex: 5,
+              opacity: 0.5,
+              pointerEvents: 'auto',
+              filter: 'brightness(0.5)',
+              transition: 'all 0.6s cubic-bezier(0.19, 1, 0.22, 1)'
+            };
+          } else if (circularDistance === -1) {
+            // Prev
+            style = {
+              transform: 'translateX(-65%) scale(0.85)',
+              zIndex: 5,
+              opacity: 0.5,
+              pointerEvents: 'auto',
+              filter: 'brightness(0.5)',
+              transition: 'all 0.6s cubic-bezier(0.19, 1, 0.22, 1)'
+            };
+          } else if (Math.abs(circularDistance) >= 2) {
+            // Stack far elements
+            // We can just keep them hidden or slightly visible in distance
+            style.opacity = 0;
+          }
+
+          return (
+            <div
+              key={index}
+              className={`apple-slide-item ${index === activeIndex ? 'active' : ''}`}
+              style={style}
+              onClick={() => handleManualChange(index)}
+            >
+              {item.type === 'video' ? (
+                <video
+                  ref={el => videoRefs.current[index] = el}
+                  src={item.src}
+                  className="apple-slide-media"
+                  muted
+                  loop
+                  playsInline
+                // Removed autoPlay attribute, handled by effect
+                />
+              ) : (
+                <img src={item.src} className="apple-slide-media" alt={item.title} />
+              )}
+
+              <div className="apple-slide-content">
+                <h3 className="apple-slide-title">{item.title}</h3>
+                {/* Desc removed */}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="nav-dots-wrapper">
+        {items.map((_, i) => (
+          <div
+            key={i}
+            className={`nav-dot ${i === activeIndex ? 'active' : ''}`}
+            onClick={() => handleManualChange(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const FeaturesSection = () => {
+  // Обновленные данные для карусели
+  // Теперь все слайды используют одно и то же видео, чтобы создать эффект ленты
   const features = [
-    { icon: IconTarget, title: "Все кастинги в одном месте", desc: "ИИ мониторит 20+ источников 24/7. Вы больше никогда не упустите роль мечты." },
-    { icon: IconImage, title: "Читает текст с фото", desc: "Даже если кастинг опубликован картинкой, наш ИИ распознает его и пришлет вам." },
-    { icon: IconStars, title: "Идеальный порядок", desc: "Все объявления приходят в едином, удобном формате. Никакого визуального шума." },
-    { icon: IconUser, title: "Персональный фильтр", desc: "Вы получаете только то, что подходит под ваш типаж, возраст и навыки." },
-    { icon: IconShield, title: "Без мусора", desc: "Мы удаляем 95% спама, рекламы и повторов. Только чистые кастинги." },
-    { icon: IconBolt, title: "Скорость решает", desc: "Отправляйте заявку первым. В киноиндустрии это часто решает судьбу роли." }
+    {
+      type: 'video',
+      src: '/videos/film.webm',
+      title: "Заявка в 1 клик", // ИЗМЕНЕНО И ПЕРЕМЕЩЕНО В НАЧАЛО
+      // desc removed
+    },
+    {
+      type: 'video',
+      src: '/videos/film.webm',
+      title: "Все кастинги в одном месте",
+      // desc removed
+    },
+    {
+      type: 'video',
+      src: '/videos/film.webm',
+      title: "Читает текст с фото",
+      // desc removed
+    },
+    {
+      type: 'video',
+      src: '/videos/film.webm',
+      title: "Идеальный порядок",
+      // desc removed
+    },
+    {
+      type: 'video',
+      src: '/videos/film.webm',
+      title: "Персональный фильтр",
+      // desc removed
+    },
+    {
+      type: 'video',
+      src: '/videos/film.webm',
+      title: "Без мусора",
+      // desc removed
+    }
   ];
 
   return (
-    <section className="section-container">
-      <h2 className="section-title">Технологии на службе <span style={{ color: "#35DF86" }}>вашей карьеры</span></h2>
-      <p className="section-subtitle">Мы автоматизировали рутину, чтобы вы занимались творчеством</p>
-      <div className="features-grid">
-        {features.map((feature, index) => (
-          <div key={index} className="feat-card">
-            <div className="feat-icon-wrapper"><feature.icon /></div>
-            <h3 className="feat-title">{feature.title}</h3>
-            <p className="feat-desc">{feature.desc}</p>
-          </div>
-        ))}
+    <section className="section-container" style={{ overflow: 'hidden', paddingTop: '0px' }}> {/* Отступ убран */}
+      {/* НОВЫЙ КОНТЕЙНЕР ДЛЯ ЗАГОЛОВКА */}
+      <div className="features-header-card">
+        <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1 }}>
+          <span style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)", display: "block", marginBottom: "10px" }}>
+            ВОЗМОЖНОСТИ
+          </span>
+          <span style={{
+            fontSize: "clamp(3rem, 6vw, 6rem)",
+            fontFamily: "'AlroCustom', sans-serif",
+            textTransform: "none",
+            fontWeight: "400",
+            background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            display: "block"
+          }}>
+            caster ai
+          </span>
+        </h2>
       </div>
+
+      {/* Заменяем старую сетку на новую карусель */}
+      <AppleCarousel items={features} />
+
     </section>
   );
 };
@@ -617,7 +1147,8 @@ const PartnersSection = () => {
     { src: "/partners/unico.png", link: "https://unicoplay.com/ru", alt: "Unico Play" },
   ];
 
-  const radius = 380;
+  // Увеличенный радиус для более широких карточек
+  const radius = 550;
   const anglePerCard = 360 / partners.length;
 
   return (
@@ -672,7 +1203,7 @@ const PricingSection = () => {
         <div className="pricing-card standard-electric">
           <div className="star-glow-bg"></div>
           <div className="standard-electric-content">
-            <div className="pricing-header"><IconStar className="plan-icon" color="#5277C1" /><span className="plan-name">ЗВЕЗДА</span></div>
+            <div className="pricing-header"><IconStar className="plan-icon" color="#5277C1" /><span className="plan-name">СТАНДАРТ</span></div>
             <div className="price-block"><div className="price-value">30 <span className="currency">₸</span></div><div className="price-period">первый месяц, далее 3 490 ₸/мес</div></div>
             <ul className="features-list">
               <li className="feature-item"><div className="check-circle"><SmallCheck color="#5277C1" /></div>Всё из тарифа «БАЗОВЫЙ»</li>
@@ -689,10 +1220,10 @@ const PricingSection = () => {
           <div className="overlay-1"></div>
           <div className="electric-content">
             <div className="badge-electric">Рекомендуем</div>
-            <div className="pricing-header"><IconCrown className="plan-icon" color="#35DF86" /><span className="plan-name">СУПЕРЗВЕЗДА</span></div>
+            <div className="pricing-header"><IconCrown className="plan-icon" color="#35DF86" /><span className="plan-name">ПРОФЕССИОНАЛ</span></div>
             <div className="price-block"><div className="price-value">30 <span className="currency">₸</span></div><div className="price-period">первый месяц, далее 4 490 ₸/мес</div></div>
             <ul className="features-list">
-              <li className="feature-item"><div className="check-circle"><SmallCheck color="#35DF86" /></div>Всё из тарифа «ЗВЕЗДА»</li>
+              <li className="feature-item"><div className="check-circle"><SmallCheck color="#35DF86" /></div>Всё из тарифа «СТАНДАРТ»</li>
               <li className="feature-item"><div className="check-circle"><SmallCheck color="#35DF86" /></div>Фильтр: массовка / роль / реклама</li>
               <li className="feature-item"><div className="check-circle"><SmallCheck color="#35DF86" /></div>Приоритетная поддержка</li>
               <li className="feature-item"><div className="check-circle"><SmallCheck color="#35DF86" /></div>Ранний доступ к новым функциям</li>
