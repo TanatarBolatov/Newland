@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
 // Эта картинка осталась только для Hero блока (если там будет видео) или как запасная
-const POSTER_IMAGE = "/background.png";
+const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
 
 // Размер ячейки сетки (в пикселях)
 const GRID_SIZE = 60;
@@ -30,6 +30,13 @@ const IconStar = ({ className, color }) => (
 const IconCrown = ({ className, color }) => (
   <svg className={className} style={{ color: color }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
+  </svg>
+);
+
+const IconPlus = ({ className, color = "white" }) => (
+  <svg className={className} style={{ color: color }} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19"></line>
+    <line x1="5" y1="12" x2="19" y2="12"></line>
   </svg>
 );
 
@@ -525,6 +532,39 @@ const globalStyles = `
 
   @media (max-width: 380px) {
     .clapper-btn-wrapper { transform: scale(0.8); margin: -10px; }
+  }
+
+  /* --- FAQ CONTAINER BOX (UPDATED TO MATCH FEATURES STYLE) --- */
+  .faq-container-box { 
+    width: 100%; 
+    max-width: 1600px; 
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(11px); 
+    -webkit-backdrop-filter: blur(11px); 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1), 
+      inset 0 1px 0 rgba(255, 255, 255, 0.5), 
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1), 
+      inset 0 0 2px 1px rgba(255, 255, 255, 0.1); 
+    border-radius: 32px; 
+    padding: 60px 20px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    position: relative; 
+    overflow: hidden; 
+    margin: 0 auto; 
+  }
+
+  /* Pseudo-elements for gradient borders */
+  .faq-container-box::before { 
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; 
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none; 
+  }
+  .faq-container-box::after { 
+    content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; 
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none; 
   }
 `;
 
@@ -1238,6 +1278,158 @@ const PricingSection = () => {
   );
 };
 
+const FAQItem = ({ question, answer, isOpen, onClick }) => {
+  const contentRef = useRef(null);
+
+  return (
+    <div
+      className="faq-item"
+      onClick={onClick}
+      style={{
+        borderBottom: "1px solid rgba(255,255,255,0.1)",
+        padding: "24px 0",
+        cursor: "pointer"
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h3 style={{
+          fontFamily: "var(--font-head)",
+          fontSize: "1.25rem",
+          fontWeight: 600,
+          color: isOpen ? "#35DF86" : "white",
+          margin: 0,
+          transition: "color 0.3s"
+        }}>
+          {question}
+        </h3>
+        <div style={{
+          transform: isOpen ? "rotate(45deg)" : "rotate(0)",
+          transition: "transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+          color: isOpen ? "#35DF86" : "white"
+        }}>
+          <IconPlus />
+        </div>
+      </div>
+      <div
+        style={{
+          maxHeight: isOpen ? `${contentRef.current?.scrollHeight}px` : "0px",
+          overflow: "hidden",
+          transition: "max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)",
+          opacity: isOpen ? 1 : 0.5
+        }}
+        ref={contentRef}
+      >
+        <p style={{
+          marginTop: "16px",
+          marginBottom: 0,
+          color: "#9ca3af",
+          lineHeight: 1.6,
+          fontSize: "1rem"
+        }}>
+          {answer}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const FAQSection = () => {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  const faqs = [
+    {
+      question: "Как работает Caster AI?",
+      answer: "Наш ИИ непрерывно сканирует более 20 проверенных источников, включая закрытые чаты и базы кастинг-директоров. Затем он фильтрует объявления по вашим параметрам (типаж, возраст, навыки) и присылает вам только релевантные предложения в удобном формате."
+    },
+    {
+      question: "Подходит ли это для начинающих актеров?",
+      answer: "Абсолютно! На платформе есть много кастингов для массовки, эпизодов и рекламы, где не требуется большой опыт. Это отличный способ начать карьеру и наработать портфолио."
+    },
+    {
+      question: "Как отменить подписку?",
+      answer: "Вы можете отменить подписку в любой момент в настройках вашего профиля. Доступ к сервису сохранится до конца оплаченного периода."
+    },
+    {
+      question: "Есть ли бесплатный пробный период?",
+      answer: "Да, у нас есть бесплатный тариф «БАЗОВЫЙ», который позволяет разместить анкету в базе и быть видимым для кастинг-директоров. Для доступа к активному поиску кастингов вы можете попробовать тариф «СТАНДАРТ» по специальной цене на первый месяц."
+    },
+    {
+      question: "Какие данные нужны для регистрации?",
+      answer: "Вам понадобятся ваши актуальные фото, базовая информация о параметрах (рост, размер одежды и т.д.) и контакты. Видеовизитка не обязательна для старта, но сильно повышает шансы на успех."
+    }
+  ];
+
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? -1 : index);
+  };
+
+  return (
+    <section className="section-container" style={{ paddingBottom: "100px" }}>
+      <div className="faq-container-box">
+        <ScrambleTextComponent
+          defaultText="FAQ"
+          hoverText="ВОПРОСЫ?"
+          className="scramble-text"
+        />
+
+        <div style={{
+          maxWidth: "1000px",
+          width: "100%",
+          padding: "0 20px"
+        }}>
+          {faqs.map((faq, index) => (
+            <FAQItem
+              key={index}
+              question={faq.question}
+              answer={faq.answer}
+              isOpen={openIndex === index}
+              onClick={() => toggleFAQ(index)}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* --- FOOTER COMPONENT --- */
+const Footer = () => {
+  return (
+    <footer style={{
+      backgroundColor: "black",
+      padding: "80px 20px 40px",
+      borderTop: "1px solid rgba(255,255,255,0.05)",
+      textAlign: "center",
+      position: "relative",
+      zIndex: 10
+    }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "30px" }}>
+
+        {/* Links */}
+        <div style={{ display: "flex", gap: "30px", flexWrap: "wrap", justifyContent: "center" }}>
+          <a href="#" style={{ color: "#9ca3af", textDecoration: "none", fontSize: "0.9rem", transition: "color 0.3s" }} onMouseEnter={(e) => e.target.style.color = "white"} onMouseLeave={(e) => e.target.style.color = "#9ca3af"}>Публичная оферта</a>
+          <span style={{ color: "#333" }}>•</span>
+          <a href="#" style={{ color: "#9ca3af", textDecoration: "none", fontSize: "0.9rem", transition: "color 0.3s" }} onMouseEnter={(e) => e.target.style.color = "white"} onMouseLeave={(e) => e.target.style.color = "#9ca3af"}>Политика конфиденциальности</a>
+          <span style={{ color: "#333" }}>•</span>
+          <a href="#" style={{ color: "#9ca3af", textDecoration: "none", fontSize: "0.9rem", transition: "color 0.3s" }} onMouseEnter={(e) => e.target.style.color = "white"} onMouseLeave={(e) => e.target.style.color = "#9ca3af"}>Поддержка</a>
+        </div>
+
+        {/* Info */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", color: "#6b7280", fontSize: "0.85rem" }}>
+          <div>ИП Телманов Дархан — ИИН 041124500027</div>
+          <div>Казахстан, г. Астана, ул. 117, 41</div>
+        </div>
+
+        {/* Copyright */}
+        <div style={{ color: "#4b5563", fontSize: "0.8rem" }}>
+          © 2024 Caster AI. Все права защищены.
+        </div>
+
+      </div>
+    </footer>
+  )
+}
+
 export default function App() {
   useEffect(() => {
     const script = document.createElement('script');
@@ -1275,14 +1467,16 @@ export default function App() {
         </defs>
       </svg>
       <style>{globalStyles}</style>
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <HeroSection />
         <GridBackgroundWrapper>
           <NewComparisonSection />
           <FeaturesSection />
           <PartnersSection />
           <PricingSection />
+          <FAQSection />
         </GridBackgroundWrapper>
+        <Footer />
       </div>
     </>
   );
