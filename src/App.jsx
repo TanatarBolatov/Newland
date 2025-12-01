@@ -293,7 +293,7 @@ const globalStyles = `
   .menu-text-gradient {
     font-family: 'AlroCustom', sans-serif;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.4rem;
     text-transform: lowercase;
     /* Градиент текста: Салатовый неон -> Лазурно-синий */
     background: linear-gradient(90deg, #35DF86, #5277C1);
@@ -633,7 +633,7 @@ const HeroSection = () => {
     color: "white",
     cursor: "default",
     position: "absolute",
-    top: "40px",
+    top: "20px",
     left: "50%",
     transform: "translateX(-50%)",
     zIndex: 20
@@ -659,7 +659,7 @@ const HeroSection = () => {
       <video src={VIDEO_PATH} poster={POSTER_IMAGE} autoPlay muted loop playsInline style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
       <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))", zIndex: 1 }} />
       <div className="hero-content" style={{ position: "relative", zIndex: 2, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0px", textAlign: "center" }}>
-        <h1 className="hero-title" style={{ fontSize: "clamp(2rem, 5vw, 4rem)", ...casterTitleStyle }}>caster</h1>
+        <h1 className="hero-title" style={{ fontSize: "clamp(1.5rem, 4vw, 3rem)", ...casterTitleStyle }}>caster</h1>
         <div className="content-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <h2 className="hero-subtitle" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", margin: 0, marginTop: "0px", ...glossySubtitleStyle }}>All castings in one place with AI</h2>
           <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", paddingTop: "0px", width: "100%" }}>
