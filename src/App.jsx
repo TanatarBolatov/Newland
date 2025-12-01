@@ -625,20 +625,46 @@ const HeroSection = () => {
     }
   };
 
-  const glossyTextStyle = { fontFamily: "'AlroCustom', sans-serif", fontWeight: "400", textTransform: "none", lineHeight: "1", color: "transparent", background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextStroke: "1px rgba(255, 255, 255, 0.6)", filter: "drop-shadow(0 0 15px rgba(53, 223, 134, 0.2)) drop-shadow(0 0 5px rgba(255,255,255,0.3))", cursor: "default" };
-  const glossySubtitleStyle = { ...glossyTextStyle, background: "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 100%)", WebkitTextStroke: "0.5px rgba(255, 255, 255, 0.4)", filter: "drop-shadow(0 0 8px rgba(82, 119, 193, 0.2))", letterSpacing: "1px" };
+  const casterTitleStyle = {
+    fontFamily: "'AlroCustom', sans-serif",
+    fontWeight: "400",
+    textTransform: "none",
+    lineHeight: "1",
+    color: "white",
+    cursor: "default",
+    position: "absolute",
+    top: "40px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 20
+  };
+
+  const glossySubtitleStyle = {
+    fontFamily: "'AlroCustom', sans-serif",
+    fontWeight: "400",
+    textTransform: "none",
+    lineHeight: "1.1",
+    color: "transparent",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 100%)",
+    WebkitBackgroundClip: "text",
+    backgroundClip: "text",
+    WebkitTextStroke: "1px rgba(255, 255, 255, 0.6)",
+    filter: "drop-shadow(0 0 15px rgba(53, 223, 134, 0.2)) drop-shadow(0 0 5px rgba(255,255,255,0.3))",
+    cursor: "default",
+    letterSpacing: "1px"
+  };
 
   return (
     <div id="hero" className="hero-container" style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <video src={VIDEO_PATH} poster={POSTER_IMAGE} autoPlay muted loop playsInline style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
       <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))", zIndex: 1 }} />
       <div className="hero-content" style={{ position: "relative", zIndex: 2, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0px", textAlign: "center" }}>
-        <h1 className="hero-title" style={{ fontSize: "clamp(6rem, 20vw, 18rem)", ...glossyTextStyle }}>caster</h1>
+        <h1 className="hero-title" style={{ fontSize: "clamp(2rem, 5vw, 4rem)", ...casterTitleStyle }}>caster</h1>
         <div className="content-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <h2 className="hero-subtitle" style={{ fontSize: "clamp(1.2rem, 3vw, 2rem)", margin: 0, marginTop: "-20px", ...glossySubtitleStyle }}>All castings in one place with AI</h2>
+          <h2 className="hero-subtitle" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", margin: 0, marginTop: "0px", ...glossySubtitleStyle }}>All castings in one place with AI</h2>
           <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", paddingTop: "0px", width: "100%" }}>
-            <ClapperButton text="Business" color="#5277C1" onClick={() => handleScrollTo('key-features')} />
-            <ClapperButton text="Actors" color="#35DF86" onClick={() => handleScrollTo('comparison')} />
+            <ClapperButton text="Business" color="#ffffff" onClick={() => handleScrollTo('key-features')} />
+            <ClapperButton text="Actors" color="#ffffff" onClick={() => handleScrollTo('comparison')} />
           </div>
         </div>
       </div>
