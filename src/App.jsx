@@ -249,8 +249,8 @@ const globalStyles = `
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -293,7 +293,7 @@ const globalStyles = `
   .menu-text-gradient {
     font-family: 'AlroCustom', sans-serif;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 1rem;
     text-transform: lowercase;
     /* Градиент текста: Салатовый неон -> Лазурно-синий */
     background: linear-gradient(90deg, #35DF86, #5277C1);
@@ -381,13 +381,70 @@ const globalStyles = `
 
   .partners-section-wrapper { width: 100%; display: flex; justify-content: center; padding: 100px 20px; position: relative; z-index: 2; }
   .partners-container-box { width: 100%; max-width: 1600px; background-color: #050507; border: none; border-radius: 32px; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; overflow: hidden; }
-  .partners-scene { perspective: 1200px; height: 400px; display: flex; justify-content: center; align-items: center; width: 100%; overflow: visible; position: relative; }
-  .partners-rotor { width: 400px; height: 200px; position: relative; transform-style: preserve-3d; animation: rotor-spin 30s linear infinite; }
-  .partner-card-3d { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; border: none; border-radius: 12px; box-shadow: none; backdrop-filter: none; display: flex; justify-content: center; align-items: center; overflow: visible; padding: 10px; cursor: pointer; transition: transform 0.3s ease; text-decoration: none; }
-  .partner-card-3d img { width: 100%; height: 100%; object-fit: contain; opacity: 0.8; transition: all 0.3s ease; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
-  .partner-card-3d:hover { transform: scale(1.1); background: transparent; border-color: transparent; box-shadow: none; }
-  .partner-card-3d:hover img { opacity: 1; transform: scale(1.1); filter: drop-shadow(0 0 15px rgba(53, 223, 134, 0.4)); }
-  @keyframes rotor-spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+  
+  /* --- NEW 3D PARTNERS SLIDER CSS --- */
+  .partners-slider-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px; /* Give it space */
+    overflow: visible;
+    width: 100%;
+    perspective: 1000px;
+    margin-top: 40px;
+  }
+  .partners-slider {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    transform-style: preserve-3d;
+    animation: slider-rotate 20s linear infinite;
+  }
+  @keyframes slider-rotate {
+    0% { transform: perspective(1000px) rotateY(0deg); }
+    100% { transform: perspective(1000px) rotateY(360deg); }
+  }
+  .partners-slider span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: center;
+    transform-style: preserve-3d;
+    /* Increased translateZ to enlarge the circle radius */
+    transform: rotateY(calc(var(--i)*45deg)) translateZ(350px);
+    -webkit-box-reflect: below 0px linear-gradient(transparent, transparent, #0004);
+  }
+  .partners-slider span img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px; 
+    object-fit: contain; 
+    transition: 0.5s;
+    background: transparent;
+    border: none;
+    /* Add volume/depth with drop-shadow */
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,0.5));
+  }
+  /* Optional hover effect to enhance 3D feel */
+  .partners-slider span:hover img {
+    transform: translateY(-10px) scale(1.1);
+    filter: drop-shadow(0 25px 25px rgba(0,0,0,0.7));
+  }
+
+  @media screen and (max-width: 600px) {
+    .partners-slider {
+      width: 100px;
+      height: 100px;
+    }
+    .partners-slider span {
+      transform: rotateY(calc(var(--i)*45deg)) translateZ(160px);
+    }
+  }
   .partners-fade-overlay { position: absolute; top: 0; bottom: 0; left: 0; right: 0; pointer-events: none; background: linear-gradient(to right, #050507 0%, transparent 15%, transparent 85%, #050507 100%); z-index: 5; }
 
   .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1600px; width: 100%; margin-top: 20px; align-items: stretch; }
@@ -710,8 +767,8 @@ const KeyFeaturesSection = () => {
       <div className="new-comp-grid">
         <div className="bento-header-card">
           <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1 }}>
-            <span style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)", display: "block", marginBottom: "10px" }}>CASTER AI</span>
-            <span style={{ fontSize: "clamp(3rem, 6vw, 6rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+            <span style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+            <span style={{ fontSize: "clamp(3rem, 6vw, 6rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
           </h2>
         </div>
         {featuresData.map((item, index) => <ComparisonCard key={index} item={item} />)}
@@ -829,18 +886,24 @@ const PartnersSection = () => {
     { src: "/partners/tiger.png", link: "https://www.instagram.com/tiger_films_kz/", alt: "Tiger Films" },
     { src: "/partners/unico.png", link: "https://unicoplay.com/ru", alt: "Unico Play" },
   ];
-  const radius = 550; const anglePerCard = 360 / partners.length;
+
   return (
     <section id="partners" className="partners-section-wrapper">
       <div className="partners-container-box">
         <ScrambleTextComponent defaultText="НАШИ ПАРТНЕРЫ" hoverText="ЛИДЕРЫ РЫНКА" className="scramble-text" />
-        <div className="partners-scene">
+        <div className="partners-slider-container">
           <div className="partners-fade-overlay" />
-          <div className="partners-rotor">
+          <div className="partners-slider">
             {partners.map((partner, i) => (
-              <a key={i} href={partner.link} target="_blank" rel="noopener noreferrer" className="partner-card-3d" style={{ transform: `rotateY(${i * anglePerCard}deg) translateZ(${radius}px)` }}>
-                <img src={partner.src} alt={partner.alt} onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.border = '1px solid #555'; e.target.parentNode.innerText = partner.alt; }} />
-              </a>
+              <span key={i} style={{ '--i': i + 1 }}>
+                <a href={partner.link} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', height: '100%' }}>
+                  <img
+                    src={partner.src}
+                    alt={partner.alt}
+                    onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.border = '1px solid #555'; e.target.parentNode.innerText = partner.alt; }}
+                  />
+                </a>
+              </span>
             ))}
           </div>
         </div>
