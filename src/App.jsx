@@ -68,7 +68,7 @@ const X = ({ size = 24, color = "currentColor", className }) => (
 
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
-const POSTER_IMAGE = "/public/background.png";
+const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
 const GRID_SIZE = 60;
 
 // --- ИКОНКИ ---
@@ -336,7 +336,28 @@ const globalStyles = `
   .section-title { font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; text-transform: uppercase; text-align: center; margin-bottom: 15px; line-height: 1.2; }
   .section-subtitle { font-size: clamp(1rem, 2vw, 1.2rem); color: #9ca3af; text-align: center; margin-bottom: 60px; max-width: 600px; line-height: 1.5; font-weight: 300; }
 
-  .new-comp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 1600px; width: 100%; }
+  /* --- UNIVERSAL CONTAINER FOR 1600px WIDTH --- */
+  .universal-black-box {
+    width: 100%;
+    max-width: 1600px;
+    background-color: #000000;
+    border-radius: 32px;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .new-comp-grid { 
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    width: 100%; /* Full width of the container */
+  }
   
   /* MODIFIED BENTO HEADER CARD */
   .bento-header-card {
@@ -358,10 +379,7 @@ const globalStyles = `
   .bento-header-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none; }
   .bento-header-card::after { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none; }
 
-  /* Responsive adjustment for mobile to stack if needed, but user asked for one row. 
-     On very small screens, one row might break, so we can add a media query 
-     to stack them back if it gets too cramped, or reduce font size. 
-     For now, I'll keep the CSS as requested for "one row" behavior. */
+  /* Responsive adjustment for mobile to stack if needed */
   @media (max-width: 768px) {
      .bento-header-card {
         flex-direction: column; /* Stack on mobile to prevent overflow */
@@ -372,35 +390,7 @@ const globalStyles = `
         flex-direction: column;
         align-items: flex-start !important;
      }
-     .features-header-card {
-        flex-direction: column; /* Stack on mobile to prevent overflow */
-        align-items: flex-start;
-        padding: 30px;
-     }
-     .features-header-card h2 {
-        flex-direction: column;
-        align-items: flex-start !important;
-     }
   }
-
-  .features-header-card {
-    width: 100%; max-width: 1600px; background-color: #000000; /* Changed to solid black */
-    border-radius: 32px; 
-    padding: 40px 40px; /* Matches bento-header-card */
-    display: flex; 
-    flex-direction: row; /* Matches bento-header-card */
-    align-items: center; 
-    justify-content: flex-start; 
-    text-align: left; 
-    min-height: 150px; /* Matches bento-header-card */
-    position: relative; 
-    overflow: hidden; 
-    margin-bottom: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.3); 
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
-  }
-  .features-header-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none; }
-  .features-header-card::after { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none; }
 
   .new-comp-card { 
     border-radius: 32px; 
@@ -832,14 +822,16 @@ const NewComparisonSection = () => {
 
   return (
     <section id="comparison" className="section-container comparison-section">
-      <div className="new-comp-grid">
-        <div className="bento-header-card">
-          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
-            <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
-          </h2>
+      <div className="universal-black-box">
+        <div className="new-comp-grid">
+          <div className="bento-header-card">
+            <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
+              <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
+            </h2>
+          </div>
+          {comparisonData.map((item, index) => <ComparisonCard key={index} item={item} />)}
         </div>
-        {comparisonData.map((item, index) => <ComparisonCard key={index} item={item} />)}
       </div>
     </section>
   );
@@ -859,14 +851,16 @@ const KeyFeaturesSection = () => {
 
   return (
     <section id="key-features" className="section-container comparison-section">
-      <div className="new-comp-grid">
-        <div className="bento-header-card">
-          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
-            <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
-          </h2>
+      <div className="universal-black-box">
+        <div className="new-comp-grid">
+          <div className="bento-header-card">
+            <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+              <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
+            </h2>
+          </div>
+          {featuresData.map((item, index) => <ComparisonCard key={index} item={item} />)}
         </div>
-        {featuresData.map((item, index) => <ComparisonCard key={index} item={item} />)}
       </div>
     </section>
   );
@@ -933,14 +927,16 @@ const FeaturesSection = () => {
 
   return (
     <section id="features" className="section-container comparison-section">
-      <div className="new-comp-grid">
-        <div className="bento-header-card">
-          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>ВОЗМОЖНОСТИ</span>
-            <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
-          </h2>
+      <div className="universal-black-box">
+        <div className="new-comp-grid">
+          <div className="bento-header-card">
+            <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>ВОЗМОЖНОСТИ</span>
+              <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
+            </h2>
+          </div>
+          {features.map((item, index) => <ComparisonCard key={index} item={item} />)}
         </div>
-        {features.map((item, index) => <ComparisonCard key={index} item={item} />)}
       </div>
     </section>
   );
