@@ -338,24 +338,87 @@ const globalStyles = `
 
   .new-comp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 1600px; width: 100%; }
   
+  /* MODIFIED BENTO HEADER CARD */
   .bento-header-card {
-    grid-column: span 2; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(11px); -webkit-backdrop-filter: blur(11px);
-    border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
-    border-radius: 32px; padding: 60px 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 250px; position: relative; overflow: hidden;
+    grid-column: span 2; 
+    background-color: #000000; /* Changed to solid black */
+    border-radius: 32px; 
+    padding: 40px 40px; /* Reduced vertical padding from 60px to 40px */
+    display: flex; 
+    flex-direction: row; /* Changed to row for side-by-side text */
+    align-items: center; /* Align vertically centered */
+    justify-content: flex-start; /* Align content to the left */
+    text-align: left; /* Ensure text is left-aligned */
+    min-height: 150px; /* Reduced min-height from 250px */
+    position: relative; 
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
   }
   .bento-header-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none; }
   .bento-header-card::after { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none; }
 
+  /* Responsive adjustment for mobile to stack if needed, but user asked for one row. 
+     On very small screens, one row might break, so we can add a media query 
+     to stack them back if it gets too cramped, or reduce font size. 
+     For now, I'll keep the CSS as requested for "one row" behavior. */
+  @media (max-width: 768px) {
+     .bento-header-card {
+        flex-direction: column; /* Stack on mobile to prevent overflow */
+        align-items: flex-start;
+        padding: 30px;
+     }
+     .bento-header-card h2 {
+        flex-direction: column;
+        align-items: flex-start !important;
+     }
+     .features-header-card {
+        flex-direction: column; /* Stack on mobile to prevent overflow */
+        align-items: flex-start;
+        padding: 30px;
+     }
+     .features-header-card h2 {
+        flex-direction: column;
+        align-items: flex-start !important;
+     }
+  }
+
   .features-header-card {
-    width: 100%; max-width: 1600px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(11px); -webkit-backdrop-filter: blur(11px);
-    border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
-    border-radius: 32px; padding: 60px 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 250px; position: relative; overflow: hidden; margin-bottom: 40px;
+    width: 100%; max-width: 1600px; background-color: #000000; /* Changed to solid black */
+    border-radius: 32px; 
+    padding: 40px 40px; /* Matches bento-header-card */
+    display: flex; 
+    flex-direction: row; /* Matches bento-header-card */
+    align-items: center; 
+    justify-content: flex-start; 
+    text-align: left; 
+    min-height: 150px; /* Matches bento-header-card */
+    position: relative; 
+    overflow: hidden; 
+    margin-bottom: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
   }
   .features-header-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none; }
   .features-header-card::after { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none; }
 
-  .new-comp-card { border-radius: 32px; overflow: hidden; background-color: #0a0a0a; border: none; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; height: 600px; position: relative; cursor: pointer; }
-  .new-comp-card:hover { transform: scale(1.02); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); }
+  .new-comp-card { 
+    border-radius: 32px; 
+    overflow: hidden; 
+    background-color: #000000; /* Changed to solid black */ 
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Copied border from header card */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1); /* Copied box-shadow */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+    display: flex; 
+    flex-direction: column; 
+    height: 600px; 
+    position: relative; 
+    cursor: pointer; 
+  }
+  .new-comp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none; z-index: 3; }
+  .new-comp-card::after { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none; z-index: 3; }
+
+  .new-comp-card:hover { transform: scale(1.02); }
   .comp-video-container { width: 100%; height: 100%; background-color: #1a1a1a; overflow: hidden; position: absolute; top: 0; left: 0; z-index: 0; }
   .comp-video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); }
   .new-comp-card:hover .comp-video { transform: scale(1.05); }
@@ -380,7 +443,7 @@ const globalStyles = `
   .dud { color: #555; opacity: 0.7; }
 
   .partners-section-wrapper { width: 100%; display: flex; justify-content: center; padding: 100px 20px; position: relative; z-index: 2; }
-  .partners-container-box { width: 100%; max-width: 1600px; background-color: #050507; border: none; border-radius: 32px; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; overflow: hidden; }
+  .partners-container-box { width: 100%; max-width: 1600px; background-color: #000000; /* Changed to solid black */ border: none; border-radius: 32px; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: none; position: relative; overflow: hidden; }
   
   /* --- NEW 3D PARTNERS SLIDER CSS --- */
   .partners-slider-container {
@@ -450,9 +513,9 @@ const globalStyles = `
   .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1600px; width: 100%; margin-top: 20px; align-items: stretch; }
   @media (max-width: 1024px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
-  .pricing-card { background-color: #050507; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; position: relative; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5); transition: transform 0.3s ease, border-color 0.3s ease; padding: 40px 30px; height: 100%; }
-  .pricing-card:hover { transform: translateY(-8px); border-color: rgba(255, 255, 255, 0.2); }
-  .pricing-card.free { background: radial-gradient(circle at top center, rgba(92, 159, 197, 0.15) 0%, rgba(5, 5, 7, 0) 60%), #050507; }
+  .pricing-card { background-color: #000000; /* Changed to solid black */ border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; position: relative; border: none; box-shadow: none; transition: transform 0.3s ease; padding: 40px 30px; height: 100%; }
+  .pricing-card:hover { transform: translateY(-8px); }
+  .pricing-card.free { background: radial-gradient(circle at top center, rgba(92, 159, 197, 0.15) 0%, rgba(5, 5, 7, 0) 60%), #000000; }
   .pricing-card.electric { background: transparent; border: none; box-shadow: none; padding: 2px; border-radius: 24px; overflow: visible; height: 100%; background: linear-gradient(-30deg, var(--gradient-color), transparent, var(--gradient-color)), linear-gradient(to bottom, var(--color-neutral-900), var(--color-neutral-900)); }
   .electric-content { background-color: var(--color-neutral-900); border-radius: 24px; height: 100%; display: flex; flex-direction: column; padding: 40px 30px; position: relative; z-index: 2; border: 2px solid var(--electric-border-color); }
   .glow-layer-1 { position: absolute; inset: 0; border-radius: 24px; border: 2px solid rgba(53, 223, 134, 0.6); filter: blur(1px); z-index: 1; pointer-events: none; }
@@ -514,7 +577,7 @@ const globalStyles = `
 
   @media (max-width: 380px) { .clapper-btn-wrapper { transform: scale(0.8); margin: -10px; } }
 
-  .faq-container-box { width: 100%; max-width: 1600px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(11px); -webkit-backdrop-filter: blur(11px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1); border-radius: 32px; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; margin: 0 auto; }
+  .faq-container-box { width: 100%; max-width: 1600px; background-color: #000000; /* Changed to solid black */ border: none; border-radius: 32px; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; margin: 0 auto; }
   .faq-container-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none; }
   .faq-container-box::after { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none; }
 `;
@@ -636,7 +699,10 @@ const HeroSection = () => {
     top: "20px",
     left: "50%",
     transform: "translateX(-50%)",
-    zIndex: 20
+    zIndex: 20,
+    display: "flex",
+    alignItems: "center",
+    gap: "15px"
   };
 
   const glossySubtitleStyle = {
@@ -659,7 +725,10 @@ const HeroSection = () => {
       <video src={VIDEO_PATH} poster={POSTER_IMAGE} autoPlay muted loop playsInline style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
       <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))", zIndex: 1 }} />
       <div className="hero-content" style={{ position: "relative", zIndex: 2, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0px", textAlign: "center" }}>
-        <h1 className="hero-title" style={{ fontSize: "clamp(1.5rem, 4vw, 3rem)", ...casterTitleStyle }}>caster</h1>
+        <h1 className="hero-title" style={{ fontSize: "clamp(1.5rem, 4vw, 3rem)", ...casterTitleStyle }}>
+          <img src="/logo/logo white.svg" alt="" style={{ height: "1.2em", width: "auto", marginTop: "-5px" }} />
+          caster
+        </h1>
         <div className="content-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <h2 className="hero-subtitle" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", margin: 0, marginTop: "0px", ...glossySubtitleStyle }}>All castings in one place with AI</h2>
           <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", paddingTop: "0px", width: "100%" }}>
@@ -742,7 +811,7 @@ const ComparisonCard = ({ item }) => {
     <div className="new-comp-card">
       <div className="comp-video-container">
         <video className="comp-video" autoPlay muted loop playsInline poster={item.poster}>
-          <source src={item.video} type="video/webm" />
+          <source src={item.video || item.src} type="video/webm" />
         </video>
       </div>
       <h3 className="comp-card-title">{item.title}</h3>
@@ -765,9 +834,9 @@ const NewComparisonSection = () => {
     <section id="comparison" className="section-container comparison-section">
       <div className="new-comp-grid">
         <div className="bento-header-card">
-          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1 }}>
-            <span style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)", display: "block", marginBottom: "10px" }}>ПОЧЕМУ ВЫБИРАЮТ</span>
-            <span style={{ fontSize: "clamp(3rem, 6vw, 6rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
+          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
+            <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
           </h2>
         </div>
         {comparisonData.map((item, index) => <ComparisonCard key={index} item={item} />)}
@@ -792,9 +861,9 @@ const KeyFeaturesSection = () => {
     <section id="key-features" className="section-container comparison-section">
       <div className="new-comp-grid">
         <div className="bento-header-card">
-          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1 }}>
-            <span style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
-            <span style={{ fontSize: "clamp(3rem, 6vw, 6rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
+          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+            <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
           </h2>
         </div>
         {featuresData.map((item, index) => <ComparisonCard key={index} item={item} />)}
@@ -854,23 +923,25 @@ const AppleCarousel = ({ items }) => {
 
 const FeaturesSection = () => {
   const features = [
-    { type: 'video', src: '/videos/film.webm', title: "Заявка в 1 клик" },
-    { type: 'video', src: '/videos/film.webm', title: "Все кастинги в одном месте" },
-    { type: 'video', src: '/videos/film.webm', title: "Читает текст с фото" },
-    { type: 'video', src: '/videos/film.webm', title: "Идеальный порядок" },
-    { type: 'video', src: '/videos/film.webm', title: "Персональный фильтр" },
-    { type: 'video', src: '/videos/film.webm', title: "Без мусора" }
+    { video: '/videos/film.webm', title: "Заявка в 1 клик", poster: "/logo/casterlogo.jpg" },
+    { video: '/videos/film.webm', title: "Все кастинги в одном месте", poster: "/logo/casterlogo.jpg" },
+    { video: '/videos/film.webm', title: "Читает текст с фото", poster: "/logo/casterlogo.jpg" },
+    { video: '/videos/film.webm', title: "Идеальный порядок", poster: "/logo/casterlogo.jpg" },
+    { video: '/videos/film.webm', title: "Персональный фильтр", poster: "/logo/casterlogo.jpg" },
+    { video: '/videos/film.webm', title: "Без мусора", poster: "/logo/casterlogo.jpg" }
   ];
 
   return (
-    <section id="features" className="section-container" style={{ overflow: 'hidden', paddingTop: '0px' }}>
-      <div className="features-header-card">
-        <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1 }}>
-          <span style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)", display: "block", marginBottom: "10px" }}>ВОЗМОЖНОСТИ</span>
-          <span style={{ fontSize: "clamp(3rem, 6vw, 6rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
-        </h2>
+    <section id="features" className="section-container comparison-section">
+      <div className="new-comp-grid">
+        <div className="bento-header-card">
+          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>ВОЗМОЖНОСТИ</span>
+            <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
+          </h2>
+        </div>
+        {features.map((item, index) => <ComparisonCard key={index} item={item} />)}
       </div>
-      <AppleCarousel items={features} />
     </section>
   );
 };
