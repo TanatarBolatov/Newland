@@ -68,7 +68,7 @@ const X = ({ size = 24, color = "currentColor", className }) => (
 
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
-const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
+const POSTER_IMAGE = "/public/background.png";
 const GRID_SIZE = 60;
 
 // --- ИКОНКИ ---
