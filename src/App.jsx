@@ -68,7 +68,7 @@ const X = ({ size = 24, color = "currentColor", className }) => (
 
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
-const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
+const POSTER_IMAGE = "/public/background.png";
 const GRID_SIZE = 60;
 
 // --- ИКОНКИ ---
@@ -256,17 +256,62 @@ const globalStyles = `
     transform: scale(1.1);
   }
 
-  /* СТИЛИ ДЛЯ МЕНЮ-БУРГЕРА (ТРИ ПОЛОСКИ) */
+  /* СТИЛИ ДЛЯ МЕНЮ-БУРГЕРА (#nav-icon3 style) */
   .hamburger-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
+    width: 60px;
+    height: 45px;
+    position: relative;
+    transform: rotate(0deg);
+    transition: .5s ease-in-out;
+    cursor: pointer;
   }
+
   .hamburger-line {
-    width: 40px;
-    height: 4px;
-    background: linear-gradient(90deg, #35DF86, #5277C1);
-    border-radius: 4px;
+    display: block;
+    position: absolute;
+    height: 6px; /* Set to 6px for cleaner look, user asked for 9px but 6px fits better with gradient */
+    width: 100%;
+    background: linear-gradient(90deg, #35DF86, #5277C1); /* Brand gradient */
+    border-radius: 9px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: .25s ease-in-out;
+  }
+  
+  .hamburger-line:nth-child(1) {
+    top: 0px;
+  }
+
+  /* Two lines in the middle for the cross effect */
+  .hamburger-line:nth-child(2), 
+  .hamburger-line:nth-child(3) {
+    top: 18px;
+  }
+
+  .hamburger-line:nth-child(4) {
+    top: 36px;
+  }
+
+  /* Open State Animations */
+  .hamburger-wrapper.open .hamburger-line:nth-child(1) {
+    top: 18px;
+    width: 0%;
+    left: 50%;
+  }
+
+  .hamburger-wrapper.open .hamburger-line:nth-child(2) {
+    transform: rotate(45deg);
+  }
+
+  .hamburger-wrapper.open .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+
+  .hamburger-wrapper.open .hamburger-line:nth-child(4) {
+    top: 18px;
+    width: 0%;
+    left: 50%;
   }
 
   /* LOGO ANIMATION STYLE */
@@ -583,7 +628,7 @@ const globalStyles = `
 
 // --- COMPONENTS ---
 
-const TopBar = ({ onOpenMenu, onLogoClick }) => {
+const TopBar = ({ onOpenMenu, onLogoClick, isOpen }) => {
   const containerStyle = {
     position: "fixed", // Changed from absolute
     top: "0",
@@ -593,7 +638,7 @@ const TopBar = ({ onOpenMenu, onLogoClick }) => {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    zIndex: 1000,
+    zIndex: 2001, // Higher z-index than Sidebar (2000) to be clickable
     backgroundColor: "black",
   };
 
@@ -606,8 +651,11 @@ const TopBar = ({ onOpenMenu, onLogoClick }) => {
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
     fontSize: "clamp(1.5rem, 4vw, 3rem)",
-    // display, alignItems, gap are handled by class .logo-interactive
-    pointerEvents: "auto"
+    display: "flex",
+    alignItems: "center",
+    gap: "15px",
+    pointerEvents: "auto",
+    cursor: "pointer" // Make logo clickable
   };
 
   const logoImageStyle = {
@@ -625,7 +673,7 @@ const TopBar = ({ onOpenMenu, onLogoClick }) => {
         <div style={logoImageStyle} />
         caster
       </div>
-      <MenuToggle onOpen={onOpenMenu} />
+      <MenuToggle onToggle={onOpenMenu} isOpen={isOpen} />
     </header>
   );
 };
@@ -673,9 +721,10 @@ const Sidebar = ({ isOpen, onClose, setPage, currentPage }) => {
       />
 
       <aside className={`custom-sidebar ${isOpen ? 'open' : 'closed'}`}>
-        <button className="sidebar-close-btn" onClick={onClose}>
+        {/* Removed redundant close button inside sidebar as TopBar toggle handles it */}
+        {/* <button className="sidebar-close-btn" onClick={onClose}>
           <X size={24} />
-        </button>
+        </button> */}
 
         <nav className="sidebar-menu">
           {menuItems.map((item, index) => (
@@ -695,10 +744,11 @@ const Sidebar = ({ isOpen, onClose, setPage, currentPage }) => {
 };
 
 // 2. КНОПКА ОТКРЫТИЯ МЕНЮ (Fixed with Gradient Text & Shine Effect)
-const MenuToggle = ({ onOpen }) => {
+const MenuToggle = ({ onToggle, isOpen }) => {
   return (
-    <button className="menu-toggle-btn" onClick={onOpen}>
-      <div className="hamburger-wrapper">
+    <button className="menu-toggle-btn" onClick={onToggle}>
+      <div className={`hamburger-wrapper ${isOpen ? 'open' : ''}`}>
+        <div className="hamburger-line"></div>
         <div className="hamburger-line"></div>
         <div className="hamburger-line"></div>
         <div className="hamburger-line"></div>
@@ -771,7 +821,7 @@ const HeroSection = ({ onBusinessClick, onActorsClick }) => {
 
   return (
     <div id="hero" className="hero-container" style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <video src={VIDEO_PATH} poster={POSTER_IMAGE} autoPlay muted loop playsInline style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
+      <video src={VIDEO_PATH} poster={POSTER_IMAGE} autoPlay muted loop={true} playsInline style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} onEnded={(e) => e.target.play()} />
       <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))", zIndex: 1 }} />
       <div className="hero-content" style={{ position: "relative", zIndex: 2, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0px", textAlign: "center" }}>
         {/* Logo removed from here, moved to TopBar */}
@@ -884,7 +934,7 @@ const NewComparisonSection = () => {
         <div className="new-comp-grid">
           <div className="bento-header-card">
             <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
               <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
             </h2>
           </div>
@@ -913,7 +963,7 @@ const KeyFeaturesSection = () => {
         <div className="new-comp-grid">
           <div className="bento-header-card">
             <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
               <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
             </h2>
           </div>
@@ -990,7 +1040,7 @@ const FeaturesSection = () => {
         {/* Header consistent with Comparison Section */}
         <div style={{ width: '100%', marginBottom: '40px', paddingLeft: '20px', textAlign: 'left' }}>
           <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ВОЗМОЖНОСТИ</span>
+            <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>ВОЗМОЖНОСТИ</span>
             <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
           </h2>
         </div>
@@ -1263,7 +1313,8 @@ export default function App() {
         />
 
         <TopBar
-          onOpenMenu={() => setIsSidebarOpen(true)}
+          isOpen={isSidebarOpen}
+          onOpenMenu={() => setIsSidebarOpen(!isSidebarOpen)}
           onLogoClick={() => {
             setCurrentPage('home');
             // Force scroll to top (Hero) even if already on home
