@@ -238,69 +238,35 @@ const globalStyles = `
     opacity: 0.9;
   }
 
-  /* --- TOGGLE BUTTON STYLES (WITH SHINE EFFECT) --- */
+  /* --- TOGGLE BUTTON STYLES (UPDATED) --- */
   .menu-toggle-btn {
-    position: fixed;
-    top: 30px;
-    right: 30px;
     z-index: 1500;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    background: transparent;
+    border: none;
     width: 90px;
     height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    overflow: hidden; /* Important for containment of shine */
-  }
-
-  /* Shine Effect Element */
-  .menu-toggle-btn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      120deg,
-      transparent,
-      rgba(255, 255, 255, 0.4),
-      transparent
-    );
-    transition: left 0.65s ease-in-out;
-    pointer-events: none;
+    transition: transform 0.3s ease;
   }
 
   .menu-toggle-btn:hover {
     transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 25px 5px rgba(255, 255, 255, 0.2); /* Enhanced glow */
   }
 
-  /* Trigger shine on hover */
-  .menu-toggle-btn:hover::before {
-    left: 100%;
+  /* СТИЛИ ДЛЯ МЕНЮ-БУРГЕРА (ТРИ ПОЛОСКИ) */
+  .hamburger-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
   }
-
-  /* СТИЛИ ДЛЯ ТЕКСТА MENU */
-  .menu-text-gradient {
-    font-family: 'AlroCustom', sans-serif;
-    font-weight: 700;
-    font-size: 1.4rem;
-    text-transform: lowercase;
-    /* Градиент текста: Салатовый неон -> Лазурно-синий */
+  .hamburger-line {
+    width: 40px;
+    height: 4px;
     background: linear-gradient(90deg, #35DF86, #5277C1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
+    border-radius: 4px;
   }
 
   /* --- ОСТАЛЬНЫЕ СТИЛИ (Grid, Cards, etc.) --- */
@@ -390,7 +356,35 @@ const globalStyles = `
         flex-direction: column;
         align-items: flex-start !important;
      }
+     .features-header-card {
+        flex-direction: column; /* Stack on mobile to prevent overflow */
+        align-items: flex-start;
+        padding: 30px;
+     }
+     .features-header-card h2 {
+        flex-direction: column;
+        align-items: flex-start !important;
+     }
   }
+
+  .features-header-card {
+    width: 100%; max-width: 1600px; background-color: #000000; /* Changed to solid black */
+    border-radius: 32px; 
+    padding: 40px 40px; /* Matches bento-header-card */
+    display: flex; 
+    flex-direction: row; /* Matches bento-header-card */
+    align-items: center; 
+    justify-content: flex-start; 
+    text-align: left; 
+    min-height: 150px; /* Matches bento-header-card */
+    position: relative; 
+    overflow: hidden; 
+    margin-bottom: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
+  }
+  .features-header-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); pointer-events: none; }
+  .features-header-card::after { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3)); pointer-events: none; }
 
   .new-comp-card { 
     border-radius: 32px; 
@@ -417,7 +411,7 @@ const globalStyles = `
   .comp-card-desc { display: none; }
 
   /* Apple Slider */
-  .apple-slider-container { width: 100%; max-width: 1600px; height: 600px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto; padding: 20px 0; }
+  .apple-slider-container { width: 100%; max-width: 100%; height: 600px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto; padding: 20px 0; }
   .apple-slider-track { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; perspective: 1000px; }
   .apple-slide-item { position: absolute; width: 65%; height: 90%; border-radius: 20px; overflow: hidden; background-color: #111; transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); cursor: pointer; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
   .apple-slide-media { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
@@ -574,27 +568,87 @@ const globalStyles = `
 
 // --- COMPONENTS ---
 
+const TopBar = ({ onOpenMenu, onLogoClick }) => {
+  const containerStyle = {
+    position: "fixed", // Changed from absolute
+    top: "0",
+    left: "0",
+    width: "100%",
+    padding: "20px 40px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    zIndex: 1000,
+    backgroundColor: "black",
+  };
+
+  const logoTextStyle = {
+    fontFamily: "'AlroCustom', sans-serif",
+    fontWeight: "400",
+    color: "transparent",
+    background: "linear-gradient(90deg, #35DF86, #5277C1)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    fontSize: "clamp(1.5rem, 4vw, 3rem)",
+    display: "flex",
+    alignItems: "center",
+    gap: "15px",
+    pointerEvents: "auto",
+    cursor: "pointer" // Make logo clickable
+  };
+
+  const logoImageStyle = {
+    height: "1.2em",
+    width: "1.5em",
+    marginTop: "-5px",
+    background: "linear-gradient(90deg, #35DF86, #5277C1)",
+    WebkitMask: "url('/logo/logo white.svg') no-repeat center / contain",
+    mask: "url('/logo/logo white.svg') no-repeat center / contain",
+  };
+
+  return (
+    <header style={containerStyle}>
+      <div style={logoTextStyle} onClick={onLogoClick}>
+        <div style={logoImageStyle} />
+        caster
+      </div>
+      <MenuToggle onOpen={onOpenMenu} />
+    </header>
+  );
+};
+
 // 1. КОМПОНЕНТ САЙДБАРА
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen, onClose, setPage, currentPage }) => {
   const menuItems = [
-    { label: "ПОЧЕМУ МЫ", id: "comparison", icon: Star },
-    { label: "ВОЗМОЖНОСТИ", id: "features", icon: Zap },
-    { label: "ПАРТНЕРЫ", id: "partners", icon: Users },
-    { label: "ТАРИФЫ АКТЕРОВ", id: "pricing", icon: Smile },
-    { label: "FAQ", id: "faq", icon: MessageCircle },
-    { label: "ФУНКЦИИ", id: "key-features", icon: Cpu },
-    { label: "БИЗНЕС ТАРИФЫ", id: "business-pricing", icon: Briefcase },
+    { label: "ПОЧЕМУ МЫ", id: "comparison", icon: Star, page: 'home' },
+    { label: "ВОЗМОЖНОСТИ", id: "features", icon: Zap, page: 'home' },
+    { label: "ПАРТНЕРЫ", id: "partners", icon: Users, page: 'home' },
+    { label: "ТАРИФЫ АКТЕРОВ", id: "pricing", icon: Smile, page: 'home' },
+    { label: "FAQ", id: "faq", icon: MessageCircle, page: 'home' },
+    { label: "ФУНКЦИИ", id: "key-features", icon: Cpu, page: 'business' },
+    { label: "БИЗНЕС ТАРИФЫ", id: "business-pricing", icon: Briefcase, page: 'business' },
   ];
 
-  const handleScrollTo = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      onClose(); // Закрываем меню при клике
-      if (window.lenis) {
-        window.lenis.scrollTo(element);
-      } else {
-        element.scrollIntoView({ behavior: 'smooth' });
+  const handleNavigation = (item) => {
+    setPage(item.page);
+    onClose();
+
+    // If staying on same page or switching, we might want to scroll
+    // For now, basic page switching is implemented. 
+    // Scrolling to specific ID after page switch requires useEffect or setTimeout
+    if (item.page === currentPage) {
+      const element = document.getElementById(item.id);
+      if (element) {
+        if (window.lenis) {
+          window.lenis.scrollTo(element);
+        } else {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }
+    } else {
+      // Switching pages, scroll to top
+      window.scrollTo(0, 0);
     }
   };
 
@@ -616,7 +670,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <button
               key={index}
               className="sidebar-link"
-              onClick={() => handleScrollTo(item.id)}
+              onClick={() => handleNavigation(item)}
             >
               <item.icon className="menu-icon" size={20} color="#35DF86" />
               {item.label}
@@ -632,7 +686,11 @@ const Sidebar = ({ isOpen, onClose }) => {
 const MenuToggle = ({ onOpen }) => {
   return (
     <button className="menu-toggle-btn" onClick={onOpen}>
-      <span className="menu-text-gradient">menu</span>
+      <div className="hamburger-wrapper">
+        <div className="hamburger-line"></div>
+        <div className="hamburger-line"></div>
+        <div className="hamburger-line"></div>
+      </div>
     </button>
   );
 };
@@ -669,31 +727,7 @@ const ClapperButton = ({ text, onClick, icon: Icon, color = "white" }) => {
   );
 };
 
-const HeroSection = () => {
-  const handleScrollTo = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      if (window.lenis) window.lenis.scrollTo(element);
-      else element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const casterTitleStyle = {
-    fontFamily: "'AlroCustom', sans-serif",
-    fontWeight: "400",
-    textTransform: "none",
-    lineHeight: "1",
-    color: "white",
-    cursor: "default",
-    position: "absolute",
-    top: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 20,
-    display: "flex",
-    alignItems: "center",
-    gap: "15px"
-  };
+const HeroSection = ({ onBusinessClick, onActorsClick }) => {
 
   const glossySubtitleStyle = {
     fontFamily: "'AlroCustom', sans-serif",
@@ -710,20 +744,31 @@ const HeroSection = () => {
     letterSpacing: "1px"
   };
 
+  const aiStyle = {
+    fontFamily: "'AlroCustom', sans-serif",
+    background: "linear-gradient(90deg, #35DF86, #5277C1)", // Brand gradient
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    color: "transparent",
+    // Maybe remove the stroke if it looks bad, but let's keep consistency or reset it
+    WebkitTextStroke: "0px",
+    textShadow: "0 0 20px rgba(53, 223, 134, 0.5)" // Add some glow
+  };
+
   return (
     <div id="hero" className="hero-container" style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <video src={VIDEO_PATH} poster={POSTER_IMAGE} autoPlay muted loop playsInline style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
       <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))", zIndex: 1 }} />
       <div className="hero-content" style={{ position: "relative", zIndex: 2, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0px", textAlign: "center" }}>
-        <h1 className="hero-title" style={{ fontSize: "clamp(1.5rem, 4vw, 3rem)", ...casterTitleStyle }}>
-          <img src="/logo/logo white.svg" alt="" style={{ height: "1.2em", width: "auto", marginTop: "-5px" }} />
-          caster
-        </h1>
+        {/* Logo removed from here, moved to TopBar */}
         <div className="content-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <h2 className="hero-subtitle" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", margin: 0, marginTop: "0px", ...glossySubtitleStyle }}>All castings in one place with AI</h2>
+          <h2 className="hero-subtitle" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", margin: 0, marginTop: "0px", ...glossySubtitleStyle }}>
+            All castings in one with <span style={aiStyle}>AI</span>
+          </h2>
           <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", paddingTop: "0px", width: "100%" }}>
-            <ClapperButton text="Business" color="#ffffff" onClick={() => handleScrollTo('key-features')} />
-            <ClapperButton text="Actors" color="#ffffff" onClick={() => handleScrollTo('comparison')} />
+            <ClapperButton text="Business" color="#ffffff" onClick={onBusinessClick} />
+            <ClapperButton text="Actors" color="#ffffff" onClick={onActorsClick} />
           </div>
         </div>
       </div>
@@ -800,7 +845,7 @@ const ComparisonCard = ({ item }) => {
   return (
     <div className="new-comp-card">
       <div className="comp-video-container">
-        <video className="comp-video" autoPlay muted loop playsInline poster={item.poster}>
+        <video className="comp-video" autoPlay muted loop={true} playsInline poster={item.poster} onEnded={(e) => e.target.play()}>
           <source src={item.video || item.src} type="video/webm" />
         </video>
       </div>
@@ -826,7 +871,7 @@ const NewComparisonSection = () => {
         <div className="new-comp-grid">
           <div className="bento-header-card">
             <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
               <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
             </h2>
           </div>
@@ -855,7 +900,7 @@ const KeyFeaturesSection = () => {
         <div className="new-comp-grid">
           <div className="bento-header-card">
             <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
               <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
             </h2>
           </div>
@@ -900,7 +945,7 @@ const AppleCarousel = ({ items }) => {
 
           return (
             <div key={index} className={`apple-slide-item ${index === activeIndex ? 'active' : ''}`} style={style} onClick={() => handleManualChange(index)}>
-              <video ref={el => videoRefs.current[index] = el} src={item.src} className="apple-slide-media" muted loop playsInline />
+              <video ref={el => videoRefs.current[index] = el} src={item.src} className="apple-slide-media" muted autoPlay loop={true} playsInline onEnded={(e) => e.target.play()} />
               <div className="apple-slide-content">
                 <h3 className="apple-slide-title">{item.title}</h3>
               </div>
@@ -917,26 +962,27 @@ const AppleCarousel = ({ items }) => {
 
 const FeaturesSection = () => {
   const features = [
-    { video: '/videos/film.webm', title: "Заявка в 1 клик", poster: "/logo/casterlogo.jpg" },
-    { video: '/videos/film.webm', title: "Все кастинги в одном месте", poster: "/logo/casterlogo.jpg" },
-    { video: '/videos/film.webm', title: "Читает текст с фото", poster: "/logo/casterlogo.jpg" },
-    { video: '/videos/film.webm', title: "Идеальный порядок", poster: "/logo/casterlogo.jpg" },
-    { video: '/videos/film.webm', title: "Персональный фильтр", poster: "/logo/casterlogo.jpg" },
-    { video: '/videos/film.webm', title: "Без мусора", poster: "/logo/casterlogo.jpg" }
+    { src: '/videos/film.webm', title: "Заявка в 1 клик" },
+    { src: '/videos/film.webm', title: "Все кастинги в одном месте" },
+    { src: '/videos/film.webm', title: "Читает текст с фото" },
+    { src: '/videos/film.webm', title: "Идеальный порядок" },
+    { src: '/videos/film.webm', title: "Персональный фильтр" },
+    { src: '/videos/film.webm', title: "Без мусора" }
   ];
 
   return (
-    <section id="features" className="section-container comparison-section">
-      <div className="universal-black-box">
-        <div className="new-comp-grid">
-          <div className="bento-header-card">
-            <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>ВОЗМОЖНОСТИ</span>
-              <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
-            </h2>
-          </div>
-          {features.map((item, index) => <ComparisonCard key={index} item={item} />)}
+    <section id="features" className="section-container" style={{ paddingBottom: '0' }}>
+      <div className="universal-black-box" style={{ padding: '60px 20px', overflow: 'hidden' }}>
+
+        {/* Header consistent with Comparison Section */}
+        <div style={{ width: '100%', marginBottom: '40px', paddingLeft: '20px', textAlign: 'left' }}>
+          <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ВОЗМОЖНОСТИ</span>
+            <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
+          </h2>
         </div>
+
+        <AppleCarousel items={features} />
       </div>
     </section>
   );
@@ -1127,8 +1173,50 @@ const Footer = () => {
   )
 }
 
+/* --- PAGE VIEWS --- */
+
+const HomeView = ({ setPage }) => {
+  const handleScrollTo = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      if (window.lenis) window.lenis.scrollTo(element);
+      else element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <>
+      <HeroSection
+        onBusinessClick={() => setPage('business')}
+        onActorsClick={() => handleScrollTo('comparison')}
+      />
+      <GridBackgroundWrapper>
+        <NewComparisonSection />
+        <FeaturesSection />
+        <PartnersSection />
+        <PricingSection id="pricing" />
+        <FAQSection />
+      </GridBackgroundWrapper>
+    </>
+  );
+};
+
+const BusinessView = () => {
+  return (
+    <>
+      <div style={{ paddingTop: "100px" }}> {/* Spacer for fixed TopBar */}
+        <GridBackgroundWrapper>
+          <KeyFeaturesSection />
+          <PricingSection id="business-pricing" />
+        </GridBackgroundWrapper>
+      </div>
+    </>
+  );
+};
+
 export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -1144,24 +1232,42 @@ export default function App() {
     return () => document.body.removeChild(script);
   }, []);
 
+  // Reset scroll when page changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
+
   return (
     <>
       <svg style={{ position: 'absolute', width: 0, height: 0 }}><defs><filter id="turbulent-displace" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" /><feDisplacementMap in="SourceGraphic" in2="noise" scale="10" /></filter></defs></svg>
       <style>{globalStyles}</style>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <MenuToggle onOpen={() => setIsSidebarOpen(true)} />
-        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          setPage={setCurrentPage}
+          currentPage={currentPage}
+        />
 
-        <HeroSection />
-        <GridBackgroundWrapper>
-          <NewComparisonSection />
-          <FeaturesSection />
-          <PartnersSection />
-          <PricingSection id="pricing" />
-          <FAQSection />
-          <KeyFeaturesSection />
-          <PricingSection id="business-pricing" />
-        </GridBackgroundWrapper>
+        <TopBar
+          onOpenMenu={() => setIsSidebarOpen(true)}
+          onLogoClick={() => {
+            setCurrentPage('home');
+            // Force scroll to top (Hero) even if already on home
+            if (window.lenis) {
+              window.lenis.scrollTo(0);
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+        />
+
+        {currentPage === 'home' ? (
+          <HomeView setPage={setCurrentPage} />
+        ) : (
+          <BusinessView />
+        )}
+
         <Footer />
       </div>
     </>
