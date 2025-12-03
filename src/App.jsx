@@ -68,7 +68,7 @@ const X = ({ size = 24, color = "currentColor", className }) => (
 
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
-const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
+const POSTER_IMAGE = "/public/background.png";
 const GRID_SIZE = 60;
 
 // --- ИКОНКИ ---
@@ -871,7 +871,7 @@ const NewComparisonSection = () => {
         <div className="new-comp-grid">
           <div className="bento-header-card">
             <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
               <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
             </h2>
           </div>
@@ -900,7 +900,7 @@ const KeyFeaturesSection = () => {
         <div className="new-comp-grid">
           <div className="bento-header-card">
             <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
               <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
             </h2>
           </div>
@@ -977,7 +977,7 @@ const FeaturesSection = () => {
         {/* Header consistent with Comparison Section */}
         <div style={{ width: '100%', marginBottom: '40px', paddingLeft: '20px', textAlign: 'left' }}>
           <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ВОЗМОЖНОСТИ</span>
+            <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>ВОЗМОЖНОСТИ</span>
             <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
           </h2>
         </div>
