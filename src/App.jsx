@@ -68,7 +68,7 @@ const X = ({ size = 24, color = "currentColor", className }) => (
 
 // --- КОНФИГУРАЦИЯ ---
 const VIDEO_PATH = "/studio-bg.webm";
-const POSTER_IMAGE = "/public/background.png";
+const POSTER_IMAGE = "https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop";
 const GRID_SIZE = 60;
 
 // --- ИКОНКИ ---
@@ -267,6 +267,21 @@ const globalStyles = `
     height: 4px;
     background: linear-gradient(90deg, #35DF86, #5277C1);
     border-radius: 4px;
+  }
+
+  /* LOGO ANIMATION STYLE */
+  .logo-interactive {
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .logo-interactive:hover {
+    transform: translateY(3px);
+  }
+  .logo-interactive:active {
+    opacity: 0.5;
   }
 
   /* --- ОСТАЛЬНЫЕ СТИЛИ (Grid, Cards, etc.) --- */
@@ -591,11 +606,8 @@ const TopBar = ({ onOpenMenu, onLogoClick }) => {
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
     fontSize: "clamp(1.5rem, 4vw, 3rem)",
-    display: "flex",
-    alignItems: "center",
-    gap: "15px",
-    pointerEvents: "auto",
-    cursor: "pointer" // Make logo clickable
+    // display, alignItems, gap are handled by class .logo-interactive
+    pointerEvents: "auto"
   };
 
   const logoImageStyle = {
@@ -609,7 +621,7 @@ const TopBar = ({ onOpenMenu, onLogoClick }) => {
 
   return (
     <header style={containerStyle}>
-      <div style={logoTextStyle} onClick={onLogoClick}>
+      <div className="logo-interactive" style={logoTextStyle} onClick={onLogoClick}>
         <div style={logoImageStyle} />
         caster
       </div>
@@ -741,7 +753,8 @@ const HeroSection = ({ onBusinessClick, onActorsClick }) => {
     WebkitTextStroke: "1px rgba(255, 255, 255, 0.6)",
     filter: "drop-shadow(0 0 15px rgba(53, 223, 134, 0.2)) drop-shadow(0 0 5px rgba(255,255,255,0.3))",
     cursor: "default",
-    letterSpacing: "1px"
+    letterSpacing: "1px",
+    whiteSpace: "nowrap"
   };
 
   const aiStyle = {
@@ -762,8 +775,8 @@ const HeroSection = ({ onBusinessClick, onActorsClick }) => {
       <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))", zIndex: 1 }} />
       <div className="hero-content" style={{ position: "relative", zIndex: 2, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0px", textAlign: "center" }}>
         {/* Logo removed from here, moved to TopBar */}
-        <div className="content-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <h2 className="hero-subtitle" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", margin: 0, marginTop: "0px", ...glossySubtitleStyle }}>
+        <div className="content-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "100%" }}>
+          <h2 className="hero-subtitle" style={{ fontSize: "clamp(3rem, 8vw, 9rem)", margin: 0, marginTop: "0px", ...glossySubtitleStyle }}>
             All castings in one with <span style={aiStyle}>AI</span>
           </h2>
           <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "center", paddingTop: "0px", width: "100%" }}>
@@ -871,7 +884,7 @@ const NewComparisonSection = () => {
         <div className="new-comp-grid">
           <div className="bento-header-card">
             <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ПОЧЕМУ ВЫБИРАЮТ</span>
               <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
             </h2>
           </div>
@@ -900,7 +913,7 @@ const KeyFeaturesSection = () => {
         <div className="new-comp-grid">
           <div className="bento-header-card">
             <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
+              <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", fontFamily: "var(--font-head)", color: "white", display: "block", marginBottom: "10px" }}>КЛЮЧЕВЫЕ ФУНКЦИИ</span>
               <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "block" }}>caster ai</span>
             </h2>
           </div>
@@ -977,7 +990,7 @@ const FeaturesSection = () => {
         {/* Header consistent with Comparison Section */}
         <div style={{ width: '100%', marginBottom: '40px', paddingLeft: '20px', textAlign: 'left' }}>
           <h2 className="section-title" style={{ margin: 0, lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: '30px', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-            <span style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: 'white' }}>ВОЗМОЖНОСТИ</span>
+            <span style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)", color: 'white' }}>ВОЗМОЖНОСТИ</span>
             <span style={{ fontSize: "clamp(3.5rem, 7vw, 7rem)", fontFamily: "'AlroCustom', sans-serif", textTransform: "none", fontWeight: "400", background: "linear-gradient(90deg, #4ade80 0%, #60a5fa 50%, #35DF86 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>caster ai</span>
           </h2>
         </div>
